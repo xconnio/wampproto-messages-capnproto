@@ -18,6 +18,31 @@ struct Hello {
 
         struct Caller {
             callerIdentification @0 :Bool;
+            callTimeout @1 :Bool;
+            callCanceling @2 :Bool;
+            progressiveCallResults @3 :Bool;
+        }
+
+        struct Callee {
+            callerIdentification @0 :Bool;
+            callTimeout @1 :Bool;
+            callCanceling @2 :Bool;
+            progressiveCallResults @3 :Bool;
+            patternBasedRegistration @4 :Bool;
+            sharedRegistration @5 :Bool;
+        }
+
+        struct Publisher {
+            publisherIdentification @0 :Bool;
+            publisherExclusion @1 :Bool;
+            subscriberBlackWhiteListing @2 :Bool;
+            acknowledgeEventReceived @3: Bool;
+        }
+
+        struct Subscriber {
+            publisherIdentification @0 :Bool;
+            patternBasedSubscription @1 :Bool;
+            eventHistory @2 :Bool;
         }
     }
 }
