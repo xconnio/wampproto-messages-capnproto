@@ -5,5 +5,6 @@ $Go.package("messages");
 $Go.import("github.com/xconnio/wampproto-capnproto/go/messages");
 
 struct Call {
-    procedure @0 :Text;
+    requestID @0 :Int64;
+    procedure @1 :Text;
 }
