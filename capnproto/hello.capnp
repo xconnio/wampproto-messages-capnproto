@@ -2,7 +2,7 @@ using Go = import "/go.capnp";
 
 @0xf20692942fafaf1e;
 $Go.package("messages");
-$Go.import("github.com/xconnio/wampproto-capnproto/go/messages");
+$Go.import("github.com/xconnio/wampproto-messages-capnproto/go/messages");
 
 struct Hello {
     realm @0 :Text;
@@ -12,9 +12,9 @@ struct Hello {
 
     struct Roles {
         caller @0 :Caller;
-        callee @1 :Caller;
-        publisher @2 :Caller;
-        subscriber @3 :Caller;
+        callee @1 :Callee;
+        publisher @2 :Publisher;
+        subscriber @3 :Subscriber;
 
         struct Caller {
             callerIdentification @0 :Bool;
