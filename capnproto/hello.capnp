@@ -2,7 +2,7 @@ using Go = import "/go.capnp";
 
 @0xf20692942fafaf1e;
 $Go.package("messages");
-$Go.import("github.com/xconnio/wampproto-messages-capnproto/go/messages");
+$Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Hello {
     realm @0 :Text;
