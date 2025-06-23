@@ -5,5 +5,6 @@ $Go.package("messages");
 $Go.import("github.com/xconnio/wampproto-capnproto/go/messages");
 
 struct Publish {
-    topic @0 :Text;
+    requestID @0 :Int64;
+    topic @1 :Text;
 }
