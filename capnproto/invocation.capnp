@@ -2,7 +2,7 @@ using Go = import "/go.capnp";
 
 @0xddef303b1dcb4c1c;
 $Go.package("messages");
-$Go.import("github.com/xconnio/wampproto-capnproto/go/messages");
+$Go.import("github.com/xconnio/wampproto-messages-capnproto/go/messages");
 
 struct Invocation {
     requestID @0 :Int64;
