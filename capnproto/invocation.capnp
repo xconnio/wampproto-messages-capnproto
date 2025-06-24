@@ -1,7 +1,7 @@
 using Go = import "/go.capnp";
 
 @0xddef303b1dcb4c1c;
-$Go.package("messages");
+$Go.package("gen");
 $Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Invocation {

@@ -4,7 +4,10 @@ go 1.23.0
 
 toolchain go1.23.10
 
-require capnproto.org/go/capnp/v3 v3.1.0-alpha.1
+require (
+	capnproto.org/go/capnp/v3 v3.1.0-alpha.1
+	github.com/xconnio/wampproto-go v0.0.0-20250619081817-4647a406d615
+)
 
 require (
 	github.com/colega/zeropool v0.0.0-20230505084239-6fb4a4f75381 // indirect

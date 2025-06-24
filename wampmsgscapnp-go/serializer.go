@@ -1,0 +1,36 @@
+package wampmsgscapnp
+
+import (
+	"fmt"
+
+	"github.com/xconnio/wampproto-go/messages"
+	"github.com/xconnio/wampproto-go/serializers"
+	"github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go/parsers"
+)
+
+type CapnprotoSerializer struct{}
+
+var _ serializers.Serializer = &CapnprotoSerializer{}
+
+func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error) {
+	switch message.Type() {
+	case messages.MessageTypePublished:
+		msg := message.(*messages.Published)
+		return parsers.PublishedToCapnproto(msg)
+	default:
+		return nil, fmt.Errorf("unknown message type: %v", message.Type())
+	}
+}
+
+func (c *CapnprotoSerializer) Deserialize(data []byte) (messages.Message, error) {
+	switch data[0] {
+	case messages.MessageTypePublished:
+		return parsers.CapnprotoToPublished(data[1:])
+	default:
+		return nil, fmt.Errorf("unknown message type: %v", data[0])
+	}
+}
+
+func (c *CapnprotoSerializer) Static() bool {
+	return true
+}
