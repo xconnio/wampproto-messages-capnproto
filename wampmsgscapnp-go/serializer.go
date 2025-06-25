@@ -29,6 +29,9 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 	case messages.MessageTypePublished:
 		msg := message.(*messages.Published)
 		return parsers.PublishedToCapnproto(msg)
+	case messages.MessageTypeRegister:
+		msg := message.(*messages.Register)
+		return parsers.RegisterToCapnproto(msg)
 	default:
 		return nil, fmt.Errorf("unknown message type: %v", message.Type())
 	}
