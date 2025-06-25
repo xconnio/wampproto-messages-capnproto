@@ -23,6 +23,9 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 	case messages.MessageTypeChallenge:
 		msg := message.(*messages.Challenge)
 		return parsers.ChallengeToCapnproto(msg)
+	case messages.MessageTypeAuthenticate:
+		msg := message.(*messages.Authenticate)
+		return parsers.AuthenticateToCapnproto(msg)
 	case messages.MessageTypePublished:
 		msg := message.(*messages.Published)
 		return parsers.PublishedToCapnproto(msg)
