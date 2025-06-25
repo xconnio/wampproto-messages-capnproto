@@ -14,6 +14,9 @@ var _ serializers.Serializer = &CapnprotoSerializer{}
 
 func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error) {
 	switch message.Type() {
+	case messages.MessageTypeHello:
+		msg := message.(*messages.Hello)
+		return parsers.HelloToCapnproto(msg)
 	case messages.MessageTypePublished:
 		msg := message.(*messages.Published)
 		return parsers.PublishedToCapnproto(msg)
