@@ -17,6 +17,9 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 	case messages.MessageTypeHello:
 		msg := message.(*messages.Hello)
 		return parsers.HelloToCapnproto(msg)
+	case messages.MessageTypeWelcome:
+		msg := message.(*messages.Welcome)
+		return parsers.WelcomeToCapnproto(msg)
 	case messages.MessageTypePublished:
 		msg := message.(*messages.Published)
 		return parsers.PublishedToCapnproto(msg)
