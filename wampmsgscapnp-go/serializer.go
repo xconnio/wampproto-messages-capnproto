@@ -35,6 +35,9 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 	case messages.MessageTypeSubscribed:
 		msg := message.(*messages.Subscribed)
 		return parsers.SubscribedToCapnproto(msg)
+	case messages.MessageTypeUnsubscribe:
+		msg := message.(*messages.Unsubscribe)
+		return parsers.UnsubscribeToCapnproto(msg)
 	default:
 		return nil, fmt.Errorf("unknown message type: %v", message.Type())
 	}
