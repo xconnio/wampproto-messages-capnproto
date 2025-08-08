@@ -26,6 +26,21 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 	case messages.MessageTypeAuthenticate:
 		msg := message.(*messages.Authenticate)
 		return parsers.AuthenticateToCapnproto(msg)
+	case messages.MessageTypeAbort:
+		msg := message.(*messages.Abort)
+		return parsers.AbortToCapnproto(msg)
+	case messages.MessageTypeError:
+		msg := message.(*messages.Error)
+		return parsers.ErrorToCapnproto(msg)
+	case messages.MessageTypeCancel:
+		msg := message.(*messages.Cancel)
+		return parsers.CancelToCapnproto(msg)
+	case messages.MessageTypeInterrupt:
+		msg := message.(*messages.Interrupt)
+		return parsers.InterruptToCapnproto(msg)
+	case messages.MessageTypeGoodbye:
+		msg := message.(*messages.GoodBye)
+		return parsers.GoodbyeToCapnproto(msg)
 	case messages.MessageTypeRegister:
 		msg := message.(*messages.Register)
 		return parsers.RegisterToCapnproto(msg)
