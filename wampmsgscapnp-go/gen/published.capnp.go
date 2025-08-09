@@ -54,20 +54,20 @@ func (s Published) Message() *capnp.Message {
 func (s Published) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Published) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Published) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Published) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Published) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Published) PublicationID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Published) PublicationID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Published) SetPublicationID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Published) SetPublicationID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Published_List is a list of Published.

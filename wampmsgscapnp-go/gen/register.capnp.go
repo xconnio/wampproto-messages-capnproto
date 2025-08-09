@@ -13,12 +13,12 @@ type Register capnp.Struct
 const Register_TypeID = 0xda7f1660e0e51156
 
 func NewRegister(s *capnp.Segment) (Register, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Register(st), err
 }
 
 func NewRootRegister(s *capnp.Segment) (Register, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Register(st), err
 }
 
@@ -54,12 +54,12 @@ func (s Register) Message() *capnp.Message {
 func (s Register) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Register) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Register) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Register) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Register) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Register) Procedure() (string, error) {
@@ -80,12 +80,28 @@ func (s Register) SetProcedure(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Register) Invoke() Register_Invoke {
+	return Register_Invoke(capnp.Struct(s).Uint16(8))
+}
+
+func (s Register) SetInvoke(v Register_Invoke) {
+	capnp.Struct(s).SetUint16(8, uint16(v))
+}
+
+func (s Register) Match() Register_Match {
+	return Register_Match(capnp.Struct(s).Uint16(10))
+}
+
+func (s Register) SetMatch(v Register_Match) {
+	capnp.Struct(s).SetUint16(10, uint16(v))
+}
+
 // Register_List is a list of Register.
 type Register_List = capnp.StructList[Register]
 
 // NewRegister creates a new list of Register.
 func NewRegister_List(s *capnp.Segment, sz int32) (Register_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1}, sz)
 	return capnp.StructList[Register](l), err
 }
 
@@ -95,4 +111,112 @@ type Register_Future struct{ *capnp.Future }
 func (f Register_Future) Struct() (Register, error) {
 	p, err := f.Future.Ptr()
 	return Register(p.Struct()), err
+}
+
+type Register_Invoke uint16
+
+// Register_Invoke_TypeID is the unique identifier for the type Register_Invoke.
+const Register_Invoke_TypeID = 0xec478f32fb5918dc
+
+// Values of Register_Invoke.
+const (
+	Register_Invoke_single     Register_Invoke = 0
+	Register_Invoke_roundrobin Register_Invoke = 1
+	Register_Invoke_random     Register_Invoke = 2
+	Register_Invoke_first      Register_Invoke = 3
+	Register_Invoke_last       Register_Invoke = 4
+)
+
+// String returns the enum's constant name.
+func (c Register_Invoke) String() string {
+	switch c {
+	case Register_Invoke_single:
+		return "single"
+	case Register_Invoke_roundrobin:
+		return "roundrobin"
+	case Register_Invoke_random:
+		return "random"
+	case Register_Invoke_first:
+		return "first"
+	case Register_Invoke_last:
+		return "last"
+
+	default:
+		return ""
+	}
+}
+
+// Register_InvokeFromString returns the enum value with a name,
+// or the zero value if there's no such value.
+func Register_InvokeFromString(c string) Register_Invoke {
+	switch c {
+	case "single":
+		return Register_Invoke_single
+	case "roundrobin":
+		return Register_Invoke_roundrobin
+	case "random":
+		return Register_Invoke_random
+	case "first":
+		return Register_Invoke_first
+	case "last":
+		return Register_Invoke_last
+
+	default:
+		return 0
+	}
+}
+
+type Register_Invoke_List = capnp.EnumList[Register_Invoke]
+
+func NewRegister_Invoke_List(s *capnp.Segment, sz int32) (Register_Invoke_List, error) {
+	return capnp.NewEnumList[Register_Invoke](s, sz)
+}
+
+type Register_Match uint16
+
+// Register_Match_TypeID is the unique identifier for the type Register_Match.
+const Register_Match_TypeID = 0xe5d184a3d1f73aaf
+
+// Values of Register_Match.
+const (
+	Register_Match_exact    Register_Match = 0
+	Register_Match_prefix   Register_Match = 1
+	Register_Match_wildcard Register_Match = 2
+)
+
+// String returns the enum's constant name.
+func (c Register_Match) String() string {
+	switch c {
+	case Register_Match_exact:
+		return "exact"
+	case Register_Match_prefix:
+		return "prefix"
+	case Register_Match_wildcard:
+		return "wildcard"
+
+	default:
+		return ""
+	}
+}
+
+// Register_MatchFromString returns the enum value with a name,
+// or the zero value if there's no such value.
+func Register_MatchFromString(c string) Register_Match {
+	switch c {
+	case "exact":
+		return Register_Match_exact
+	case "prefix":
+		return Register_Match_prefix
+	case "wildcard":
+		return Register_Match_wildcard
+
+	default:
+		return 0
+	}
+}
+
+type Register_Match_List = capnp.EnumList[Register_Match]
+
+func NewRegister_Match_List(s *capnp.Segment, sz int32) (Register_Match_List, error) {
+	return capnp.NewEnumList[Register_Match](s, sz)
 }

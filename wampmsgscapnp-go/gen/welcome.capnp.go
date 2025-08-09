@@ -13,12 +13,12 @@ type Welcome capnp.Struct
 const Welcome_TypeID = 0xf5de2c77d40f75ac
 
 func NewWelcome(s *capnp.Segment) (Welcome, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
 	return Welcome(st), err
 }
 
 func NewRootWelcome(s *capnp.Segment) (Welcome, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
 	return Welcome(st), err
 }
 
@@ -54,12 +54,108 @@ func (s Welcome) Message() *capnp.Message {
 func (s Welcome) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Welcome) SessionID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Welcome) SessionID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Welcome) SetSessionID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Welcome) SetSessionID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
+}
+
+func (s Welcome) Authid() (string, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.Text(), err
+}
+
+func (s Welcome) HasAuthid() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s Welcome) AuthidBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s Welcome) SetAuthid(v string) error {
+	return capnp.Struct(s).SetText(0, v)
+}
+
+func (s Welcome) Authrole() (string, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.Text(), err
+}
+
+func (s Welcome) HasAuthrole() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s Welcome) AuthroleBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s Welcome) SetAuthrole(v string) error {
+	return capnp.Struct(s).SetText(1, v)
+}
+
+func (s Welcome) Authmethod() (string, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.Text(), err
+}
+
+func (s Welcome) HasAuthmethod() bool {
+	return capnp.Struct(s).HasPtr(2)
+}
+
+func (s Welcome) AuthmethodBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s Welcome) SetAuthmethod(v string) error {
+	return capnp.Struct(s).SetText(2, v)
+}
+
+func (s Welcome) Authprovider() (string, error) {
+	p, err := capnp.Struct(s).Ptr(3)
+	return p.Text(), err
+}
+
+func (s Welcome) HasAuthprovider() bool {
+	return capnp.Struct(s).HasPtr(3)
+}
+
+func (s Welcome) AuthproviderBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(3)
+	return p.TextBytes(), err
+}
+
+func (s Welcome) SetAuthprovider(v string) error {
+	return capnp.Struct(s).SetText(3, v)
+}
+
+func (s Welcome) Roles() (Welcome_Roles, error) {
+	p, err := capnp.Struct(s).Ptr(4)
+	return Welcome_Roles(p.Struct()), err
+}
+
+func (s Welcome) HasRoles() bool {
+	return capnp.Struct(s).HasPtr(4)
+}
+
+func (s Welcome) SetRoles(v Welcome_Roles) error {
+	return capnp.Struct(s).SetPtr(4, capnp.Struct(v).ToPtr())
+}
+
+// NewRoles sets the roles field to a newly
+// allocated Welcome_Roles struct, preferring placement in s's segment.
+func (s Welcome) NewRoles() (Welcome_Roles, error) {
+	ss, err := NewWelcome_Roles(capnp.Struct(s).Segment())
+	if err != nil {
+		return Welcome_Roles{}, err
+	}
+	err = capnp.Struct(s).SetPtr(4, capnp.Struct(ss).ToPtr())
+	return ss, err
 }
 
 // Welcome_List is a list of Welcome.
@@ -67,7 +163,7 @@ type Welcome_List = capnp.StructList[Welcome]
 
 // NewWelcome creates a new list of Welcome.
 func NewWelcome_List(s *capnp.Segment, sz int32) (Welcome_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
 	return capnp.StructList[Welcome](l), err
 }
 
@@ -77,4 +173,333 @@ type Welcome_Future struct{ *capnp.Future }
 func (f Welcome_Future) Struct() (Welcome, error) {
 	p, err := f.Future.Ptr()
 	return Welcome(p.Struct()), err
+}
+func (p Welcome_Future) Roles() Welcome_Roles_Future {
+	return Welcome_Roles_Future{Future: p.Future.Field(4, nil)}
+}
+
+type Welcome_Roles capnp.Struct
+
+// Welcome_Roles_TypeID is the unique identifier for the type Welcome_Roles.
+const Welcome_Roles_TypeID = 0x9189a38e196e1ee5
+
+func NewWelcome_Roles(s *capnp.Segment) (Welcome_Roles, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return Welcome_Roles(st), err
+}
+
+func NewRootWelcome_Roles(s *capnp.Segment) (Welcome_Roles, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return Welcome_Roles(st), err
+}
+
+func ReadRootWelcome_Roles(msg *capnp.Message) (Welcome_Roles, error) {
+	root, err := msg.Root()
+	return Welcome_Roles(root.Struct()), err
+}
+
+func (s Welcome_Roles) String() string {
+	str, _ := text.Marshal(0x9189a38e196e1ee5, capnp.Struct(s))
+	return str
+}
+
+func (s Welcome_Roles) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Welcome_Roles) DecodeFromPtr(p capnp.Ptr) Welcome_Roles {
+	return Welcome_Roles(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Welcome_Roles) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Welcome_Roles) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Welcome_Roles) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Welcome_Roles) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s Welcome_Roles) Dealer() (Welcome_Roles_Dealer, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return Welcome_Roles_Dealer(p.Struct()), err
+}
+
+func (s Welcome_Roles) HasDealer() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s Welcome_Roles) SetDealer(v Welcome_Roles_Dealer) error {
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
+}
+
+// NewDealer sets the dealer field to a newly
+// allocated Welcome_Roles_Dealer struct, preferring placement in s's segment.
+func (s Welcome_Roles) NewDealer() (Welcome_Roles_Dealer, error) {
+	ss, err := NewWelcome_Roles_Dealer(capnp.Struct(s).Segment())
+	if err != nil {
+		return Welcome_Roles_Dealer{}, err
+	}
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
+	return ss, err
+}
+
+func (s Welcome_Roles) Broker() (Welcome_Roles_Broker, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return Welcome_Roles_Broker(p.Struct()), err
+}
+
+func (s Welcome_Roles) HasBroker() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s Welcome_Roles) SetBroker(v Welcome_Roles_Broker) error {
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
+}
+
+// NewBroker sets the broker field to a newly
+// allocated Welcome_Roles_Broker struct, preferring placement in s's segment.
+func (s Welcome_Roles) NewBroker() (Welcome_Roles_Broker, error) {
+	ss, err := NewWelcome_Roles_Broker(capnp.Struct(s).Segment())
+	if err != nil {
+		return Welcome_Roles_Broker{}, err
+	}
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
+	return ss, err
+}
+
+// Welcome_Roles_List is a list of Welcome_Roles.
+type Welcome_Roles_List = capnp.StructList[Welcome_Roles]
+
+// NewWelcome_Roles creates a new list of Welcome_Roles.
+func NewWelcome_Roles_List(s *capnp.Segment, sz int32) (Welcome_Roles_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	return capnp.StructList[Welcome_Roles](l), err
+}
+
+// Welcome_Roles_Future is a wrapper for a Welcome_Roles promised by a client call.
+type Welcome_Roles_Future struct{ *capnp.Future }
+
+func (f Welcome_Roles_Future) Struct() (Welcome_Roles, error) {
+	p, err := f.Future.Ptr()
+	return Welcome_Roles(p.Struct()), err
+}
+func (p Welcome_Roles_Future) Dealer() Welcome_Roles_Dealer_Future {
+	return Welcome_Roles_Dealer_Future{Future: p.Future.Field(0, nil)}
+}
+func (p Welcome_Roles_Future) Broker() Welcome_Roles_Broker_Future {
+	return Welcome_Roles_Broker_Future{Future: p.Future.Field(1, nil)}
+}
+
+type Welcome_Roles_Dealer capnp.Struct
+
+// Welcome_Roles_Dealer_TypeID is the unique identifier for the type Welcome_Roles_Dealer.
+const Welcome_Roles_Dealer_TypeID = 0xa3914d34548bb2a1
+
+func NewWelcome_Roles_Dealer(s *capnp.Segment) (Welcome_Roles_Dealer, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Welcome_Roles_Dealer(st), err
+}
+
+func NewRootWelcome_Roles_Dealer(s *capnp.Segment) (Welcome_Roles_Dealer, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Welcome_Roles_Dealer(st), err
+}
+
+func ReadRootWelcome_Roles_Dealer(msg *capnp.Message) (Welcome_Roles_Dealer, error) {
+	root, err := msg.Root()
+	return Welcome_Roles_Dealer(root.Struct()), err
+}
+
+func (s Welcome_Roles_Dealer) String() string {
+	str, _ := text.Marshal(0xa3914d34548bb2a1, capnp.Struct(s))
+	return str
+}
+
+func (s Welcome_Roles_Dealer) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Welcome_Roles_Dealer) DecodeFromPtr(p capnp.Ptr) Welcome_Roles_Dealer {
+	return Welcome_Roles_Dealer(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Welcome_Roles_Dealer) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Welcome_Roles_Dealer) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Welcome_Roles_Dealer) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Welcome_Roles_Dealer) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s Welcome_Roles_Dealer) CallerIdentification() bool {
+	return capnp.Struct(s).Bit(0)
+}
+
+func (s Welcome_Roles_Dealer) SetCallerIdentification(v bool) {
+	capnp.Struct(s).SetBit(0, v)
+}
+
+func (s Welcome_Roles_Dealer) CallTimeout() bool {
+	return capnp.Struct(s).Bit(1)
+}
+
+func (s Welcome_Roles_Dealer) SetCallTimeout(v bool) {
+	capnp.Struct(s).SetBit(1, v)
+}
+
+func (s Welcome_Roles_Dealer) CallCanceling() bool {
+	return capnp.Struct(s).Bit(2)
+}
+
+func (s Welcome_Roles_Dealer) SetCallCanceling(v bool) {
+	capnp.Struct(s).SetBit(2, v)
+}
+
+func (s Welcome_Roles_Dealer) ProgressiveCallResults() bool {
+	return capnp.Struct(s).Bit(3)
+}
+
+func (s Welcome_Roles_Dealer) SetProgressiveCallResults(v bool) {
+	capnp.Struct(s).SetBit(3, v)
+}
+
+func (s Welcome_Roles_Dealer) PatternBasedRegistration() bool {
+	return capnp.Struct(s).Bit(4)
+}
+
+func (s Welcome_Roles_Dealer) SetPatternBasedRegistration(v bool) {
+	capnp.Struct(s).SetBit(4, v)
+}
+
+func (s Welcome_Roles_Dealer) SharedRegistration() bool {
+	return capnp.Struct(s).Bit(5)
+}
+
+func (s Welcome_Roles_Dealer) SetSharedRegistration(v bool) {
+	capnp.Struct(s).SetBit(5, v)
+}
+
+// Welcome_Roles_Dealer_List is a list of Welcome_Roles_Dealer.
+type Welcome_Roles_Dealer_List = capnp.StructList[Welcome_Roles_Dealer]
+
+// NewWelcome_Roles_Dealer creates a new list of Welcome_Roles_Dealer.
+func NewWelcome_Roles_Dealer_List(s *capnp.Segment, sz int32) (Welcome_Roles_Dealer_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return capnp.StructList[Welcome_Roles_Dealer](l), err
+}
+
+// Welcome_Roles_Dealer_Future is a wrapper for a Welcome_Roles_Dealer promised by a client call.
+type Welcome_Roles_Dealer_Future struct{ *capnp.Future }
+
+func (f Welcome_Roles_Dealer_Future) Struct() (Welcome_Roles_Dealer, error) {
+	p, err := f.Future.Ptr()
+	return Welcome_Roles_Dealer(p.Struct()), err
+}
+
+type Welcome_Roles_Broker capnp.Struct
+
+// Welcome_Roles_Broker_TypeID is the unique identifier for the type Welcome_Roles_Broker.
+const Welcome_Roles_Broker_TypeID = 0xca57740b1d767ccf
+
+func NewWelcome_Roles_Broker(s *capnp.Segment) (Welcome_Roles_Broker, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Welcome_Roles_Broker(st), err
+}
+
+func NewRootWelcome_Roles_Broker(s *capnp.Segment) (Welcome_Roles_Broker, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Welcome_Roles_Broker(st), err
+}
+
+func ReadRootWelcome_Roles_Broker(msg *capnp.Message) (Welcome_Roles_Broker, error) {
+	root, err := msg.Root()
+	return Welcome_Roles_Broker(root.Struct()), err
+}
+
+func (s Welcome_Roles_Broker) String() string {
+	str, _ := text.Marshal(0xca57740b1d767ccf, capnp.Struct(s))
+	return str
+}
+
+func (s Welcome_Roles_Broker) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Welcome_Roles_Broker) DecodeFromPtr(p capnp.Ptr) Welcome_Roles_Broker {
+	return Welcome_Roles_Broker(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Welcome_Roles_Broker) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Welcome_Roles_Broker) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Welcome_Roles_Broker) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Welcome_Roles_Broker) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s Welcome_Roles_Broker) PublisherIdentification() bool {
+	return capnp.Struct(s).Bit(0)
+}
+
+func (s Welcome_Roles_Broker) SetPublisherIdentification(v bool) {
+	capnp.Struct(s).SetBit(0, v)
+}
+
+func (s Welcome_Roles_Broker) PublisherExclusion() bool {
+	return capnp.Struct(s).Bit(1)
+}
+
+func (s Welcome_Roles_Broker) SetPublisherExclusion(v bool) {
+	capnp.Struct(s).SetBit(1, v)
+}
+
+func (s Welcome_Roles_Broker) AcknowledgeEventReceived() bool {
+	return capnp.Struct(s).Bit(2)
+}
+
+func (s Welcome_Roles_Broker) SetAcknowledgeEventReceived(v bool) {
+	capnp.Struct(s).SetBit(2, v)
+}
+
+func (s Welcome_Roles_Broker) PatternBasedSubscription() bool {
+	return capnp.Struct(s).Bit(3)
+}
+
+func (s Welcome_Roles_Broker) SetPatternBasedSubscription(v bool) {
+	capnp.Struct(s).SetBit(3, v)
+}
+
+// Welcome_Roles_Broker_List is a list of Welcome_Roles_Broker.
+type Welcome_Roles_Broker_List = capnp.StructList[Welcome_Roles_Broker]
+
+// NewWelcome_Roles_Broker creates a new list of Welcome_Roles_Broker.
+func NewWelcome_Roles_Broker_List(s *capnp.Segment, sz int32) (Welcome_Roles_Broker_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return capnp.StructList[Welcome_Roles_Broker](l), err
+}
+
+// Welcome_Roles_Broker_Future is a wrapper for a Welcome_Roles_Broker promised by a client call.
+type Welcome_Roles_Broker_Future struct{ *capnp.Future }
+
+func (f Welcome_Roles_Broker_Future) Struct() (Welcome_Roles_Broker, error) {
+	p, err := f.Future.Ptr()
+	return Welcome_Roles_Broker(p.Struct()), err
 }

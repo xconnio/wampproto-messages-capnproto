@@ -13,12 +13,12 @@ type Error capnp.Struct
 const Error_TypeID = 0xd6edeb45b4137a8a
 
 func NewError(s *capnp.Segment) (Error, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
 	return Error(st), err
 }
 
 func NewRootError(s *capnp.Segment) (Error, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
 	return Error(st), err
 }
 
@@ -54,20 +54,20 @@ func (s Error) Message() *capnp.Message {
 func (s Error) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Error) MessageType() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Error) MessageType() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Error) SetMessageType(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Error) SetMessageType(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Error) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Error) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Error) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Error) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 func (s Error) Uri() (string, error) {
@@ -88,12 +88,20 @@ func (s Error) SetUri(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Error) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(16)
+}
+
+func (s Error) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(16, v)
+}
+
 // Error_List is a list of Error.
 type Error_List = capnp.StructList[Error]
 
 // NewError creates a new list of Error.
 func NewError_List(s *capnp.Segment, sz int32) (Error_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1}, sz)
 	return capnp.StructList[Error](l), err
 }
 

@@ -13,12 +13,12 @@ type Yield capnp.Struct
 const Yield_TypeID = 0x934c3d62b006f8da
 
 func NewYield(s *capnp.Segment) (Yield, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
 	return Yield(st), err
 }
 
 func NewRootYield(s *capnp.Segment) (Yield, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
 	return Yield(st), err
 }
 
@@ -54,12 +54,20 @@ func (s Yield) Message() *capnp.Message {
 func (s Yield) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Yield) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Yield) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Yield) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Yield) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
+}
+
+func (s Yield) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(8)
+}
+
+func (s Yield) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Yield_List is a list of Yield.
@@ -67,7 +75,7 @@ type Yield_List = capnp.StructList[Yield]
 
 // NewYield creates a new list of Yield.
 func NewYield_List(s *capnp.Segment, sz int32) (Yield_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
 	return capnp.StructList[Yield](l), err
 }
 

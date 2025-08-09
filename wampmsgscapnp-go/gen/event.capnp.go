@@ -13,12 +13,12 @@ type Event capnp.Struct
 const Event_TypeID = 0xd2e423fd720731b2
 
 func NewEvent(s *capnp.Segment) (Event, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3})
 	return Event(st), err
 }
 
 func NewRootEvent(s *capnp.Segment) (Event, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3})
 	return Event(st), err
 }
 
@@ -54,20 +54,90 @@ func (s Event) Message() *capnp.Message {
 func (s Event) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Event) SubscriptionID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Event) SubscriptionID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Event) SetSubscriptionID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Event) SetSubscriptionID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Event) PublicationID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Event) PublicationID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Event) SetPublicationID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Event) SetPublicationID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
+}
+
+func (s Event) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(16)
+}
+
+func (s Event) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(16, v)
+}
+
+func (s Event) Publisher() uint64 {
+	return capnp.Struct(s).Uint64(24)
+}
+
+func (s Event) SetPublisher(v uint64) {
+	capnp.Struct(s).SetUint64(24, v)
+}
+
+func (s Event) PublisherAuthID() (string, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.Text(), err
+}
+
+func (s Event) HasPublisherAuthID() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s Event) PublisherAuthIDBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s Event) SetPublisherAuthID(v string) error {
+	return capnp.Struct(s).SetText(0, v)
+}
+
+func (s Event) PublisherAuthRole() (string, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.Text(), err
+}
+
+func (s Event) HasPublisherAuthRole() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s Event) PublisherAuthRoleBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s Event) SetPublisherAuthRole(v string) error {
+	return capnp.Struct(s).SetText(1, v)
+}
+
+func (s Event) Topic() (string, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.Text(), err
+}
+
+func (s Event) HasTopic() bool {
+	return capnp.Struct(s).HasPtr(2)
+}
+
+func (s Event) TopicBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s Event) SetTopic(v string) error {
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // Event_List is a list of Event.
@@ -75,7 +145,7 @@ type Event_List = capnp.StructList[Event]
 
 // NewEvent creates a new list of Event.
 func NewEvent_List(s *capnp.Segment, sz int32) (Event_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3}, sz)
 	return capnp.StructList[Event](l), err
 }
 

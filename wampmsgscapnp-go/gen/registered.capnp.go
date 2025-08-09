@@ -54,20 +54,20 @@ func (s Registered) Message() *capnp.Message {
 func (s Registered) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Registered) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Registered) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Registered) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Registered) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Registered) RegistrationID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Registered) RegistrationID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Registered) SetRegistrationID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Registered) SetRegistrationID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Registered_List is a list of Registered.

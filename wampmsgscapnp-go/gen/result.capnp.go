@@ -13,12 +13,12 @@ type Result capnp.Struct
 const Result_TypeID = 0xe99a410370f42e83
 
 func NewResult(s *capnp.Segment) (Result, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
 	return Result(st), err
 }
 
 func NewRootResult(s *capnp.Segment) (Result, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
 	return Result(st), err
 }
 
@@ -54,12 +54,20 @@ func (s Result) Message() *capnp.Message {
 func (s Result) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Result) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Result) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Result) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Result) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
+}
+
+func (s Result) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(8)
+}
+
+func (s Result) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Result_List is a list of Result.
@@ -67,7 +75,7 @@ type Result_List = capnp.StructList[Result]
 
 // NewResult creates a new list of Result.
 func NewResult_List(s *capnp.Segment, sz int32) (Result_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
 	return capnp.StructList[Result](l), err
 }
 

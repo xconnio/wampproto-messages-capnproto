@@ -600,20 +600,12 @@ func (s Hello_Roles_Publisher) SetPublisherExclusion(v bool) {
 	capnp.Struct(s).SetBit(1, v)
 }
 
-func (s Hello_Roles_Publisher) SubscriberBlackWhiteListing() bool {
+func (s Hello_Roles_Publisher) AcknowledgeEventReceived() bool {
 	return capnp.Struct(s).Bit(2)
 }
 
-func (s Hello_Roles_Publisher) SetSubscriberBlackWhiteListing(v bool) {
-	capnp.Struct(s).SetBit(2, v)
-}
-
-func (s Hello_Roles_Publisher) AcknowledgeEventReceived() bool {
-	return capnp.Struct(s).Bit(3)
-}
-
 func (s Hello_Roles_Publisher) SetAcknowledgeEventReceived(v bool) {
-	capnp.Struct(s).SetBit(3, v)
+	capnp.Struct(s).SetBit(2, v)
 }
 
 // Hello_Roles_Publisher_List is a list of Hello_Roles_Publisher.
@@ -694,14 +686,6 @@ func (s Hello_Roles_Subscriber) PatternBasedSubscription() bool {
 
 func (s Hello_Roles_Subscriber) SetPatternBasedSubscription(v bool) {
 	capnp.Struct(s).SetBit(1, v)
-}
-
-func (s Hello_Roles_Subscriber) EventHistory() bool {
-	return capnp.Struct(s).Bit(2)
-}
-
-func (s Hello_Roles_Subscriber) SetEventHistory(v bool) {
-	capnp.Struct(s).SetBit(2, v)
 }
 
 // Hello_Roles_Subscriber_List is a list of Hello_Roles_Subscriber.

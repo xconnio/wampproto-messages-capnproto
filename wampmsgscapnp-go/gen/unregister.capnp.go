@@ -54,20 +54,20 @@ func (s Unregister) Message() *capnp.Message {
 func (s Unregister) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Unregister) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Unregister) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Unregister) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Unregister) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Unregister) RegistrationID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Unregister) RegistrationID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Unregister) SetRegistrationID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Unregister) SetRegistrationID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Unregister_List is a list of Unregister.

@@ -13,12 +13,12 @@ type Publish capnp.Struct
 const Publish_TypeID = 0xdecf58c214d86357
 
 func NewPublish(s *capnp.Segment) (Publish, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
 	return Publish(st), err
 }
 
 func NewRootPublish(s *capnp.Segment) (Publish, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1})
 	return Publish(st), err
 }
 
@@ -54,12 +54,12 @@ func (s Publish) Message() *capnp.Message {
 func (s Publish) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Publish) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Publish) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Publish) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Publish) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Publish) Topic() (string, error) {
@@ -80,12 +80,28 @@ func (s Publish) SetTopic(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Publish) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(8)
+}
+
+func (s Publish) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
+}
+
+func (s Publish) ExludeMe() bool {
+	return capnp.Struct(s).Bit(128)
+}
+
+func (s Publish) SetExludeMe(v bool) {
+	capnp.Struct(s).SetBit(128, v)
+}
+
 // Publish_List is a list of Publish.
 type Publish_List = capnp.StructList[Publish]
 
 // NewPublish creates a new list of Publish.
 func NewPublish_List(s *capnp.Segment, sz int32) (Publish_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 24, PointerCount: 1}, sz)
 	return capnp.StructList[Publish](l), err
 }
 

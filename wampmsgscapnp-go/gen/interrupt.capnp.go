@@ -54,12 +54,12 @@ func (s Interrupt) Message() *capnp.Message {
 func (s Interrupt) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Interrupt) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Interrupt) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Interrupt) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Interrupt) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Interrupt_List is a list of Interrupt.

@@ -13,12 +13,12 @@ type Invocation capnp.Struct
 const Invocation_TypeID = 0xcba85ac7b2406383
 
 func NewInvocation(s *capnp.Segment) (Invocation, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3})
 	return Invocation(st), err
 }
 
 func NewRootInvocation(s *capnp.Segment) (Invocation, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3})
 	return Invocation(st), err
 }
 
@@ -54,20 +54,90 @@ func (s Invocation) Message() *capnp.Message {
 func (s Invocation) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Invocation) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Invocation) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Invocation) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Invocation) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Invocation) RegistrationID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Invocation) RegistrationID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Invocation) SetRegistrationID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Invocation) SetRegistrationID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
+}
+
+func (s Invocation) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(16)
+}
+
+func (s Invocation) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(16, v)
+}
+
+func (s Invocation) Caller() uint64 {
+	return capnp.Struct(s).Uint64(24)
+}
+
+func (s Invocation) SetCaller(v uint64) {
+	capnp.Struct(s).SetUint64(24, v)
+}
+
+func (s Invocation) CallerAuthID() (string, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.Text(), err
+}
+
+func (s Invocation) HasCallerAuthID() bool {
+	return capnp.Struct(s).HasPtr(0)
+}
+
+func (s Invocation) CallerAuthIDBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s Invocation) SetCallerAuthID(v string) error {
+	return capnp.Struct(s).SetText(0, v)
+}
+
+func (s Invocation) CallerAuthRole() (string, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.Text(), err
+}
+
+func (s Invocation) HasCallerAuthRole() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s Invocation) CallerAuthRoleBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s Invocation) SetCallerAuthRole(v string) error {
+	return capnp.Struct(s).SetText(1, v)
+}
+
+func (s Invocation) Procedure() (string, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.Text(), err
+}
+
+func (s Invocation) HasProcedure() bool {
+	return capnp.Struct(s).HasPtr(2)
+}
+
+func (s Invocation) ProcedureBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s Invocation) SetProcedure(v string) error {
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // Invocation_List is a list of Invocation.
@@ -75,7 +145,7 @@ type Invocation_List = capnp.StructList[Invocation]
 
 // NewInvocation creates a new list of Invocation.
 func NewInvocation_List(s *capnp.Segment, sz int32) (Invocation_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 32, PointerCount: 3}, sz)
 	return capnp.StructList[Invocation](l), err
 }
 
