@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"bytes"
-
 	"capnproto.org/go/capnp/v3"
 	"github.com/xconnio/wampproto-go/util"
 
@@ -57,7 +55,7 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 		return nil, err
 	}
 
-	event, err := gen.NewEvent(seg)
+	event, err := gen.NewRootEvent(seg)
 	if err != nil {
 		return nil, err
 	}
@@ -85,16 +83,16 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 		}
 	}
 
-	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	data, err := msg.Marshal()
+	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeEvent, &data), nil
+	return PrependHeader(messages.MessageTypeEvent, data), nil
 }
 
 func CapnprotoToEvent(data, payload []byte) (*messages.Event, error) {
-	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
+	msg, err := capnp.Unmarshal(data)
 	if err != nil {
 		return nil, err
 	}

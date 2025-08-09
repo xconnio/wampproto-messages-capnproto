@@ -1,13 +1,11 @@
 package parsers
 
 import (
-	"bytes"
 	"encoding/binary"
 	"fmt"
 )
 
-func PrependHeader(messageType uint64, message *bytes.Buffer) []byte {
-	payload := message.Bytes()
+func PrependHeader(messageType uint64, payload []byte) []byte {
 	result := make([]byte, 3+len(payload))
 
 	result[0] = uint8(messageType)
@@ -28,8 +26,8 @@ func ExtractMessage(data []byte) ([]byte, []byte, error) {
 		return nil, nil, fmt.Errorf("invalid message length")
 	}
 
-	messageData := data[3:messageLength]
-	payloadData := data[3+messageLength:]
+	messageData := data[3 : 3+int(messageLength)]
+	payloadData := data[3+int(messageLength):]
 
 	return messageData, payloadData, nil
 }
