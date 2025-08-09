@@ -1,11 +1,11 @@
-package wampmsgscapnp
+package wampprotocapnp
 
 import (
 	"fmt"
 
 	"github.com/xconnio/wampproto-go/messages"
 	"github.com/xconnio/wampproto-go/serializers"
-	"github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go/parsers"
+	"github.com/xconnio/wampproto-serializer-capnproto/go/parsers"
 )
 
 type CapnprotoSerializer struct{}
