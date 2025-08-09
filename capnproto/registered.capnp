@@ -5,6 +5,6 @@ $Go.package("gen");
 $Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Registered {
-    requestID @0 :Int64;
-    registrationID @1 :Int64;
+    requestID @0 :UInt64;
+    registrationID @1 :UInt64;
 }
