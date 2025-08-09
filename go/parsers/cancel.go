@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"bytes"
-
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
@@ -31,23 +29,23 @@ func CancelToCapnproto(m *messages.Cancel) ([]byte, error) {
 		return nil, err
 	}
 
-	c, err := gen.NewCancel(seg)
+	c, err := gen.NewRootCall(seg)
 	if err != nil {
 		return nil, err
 	}
 
 	c.SetRequestID(m.RequestID())
 
-	var buf bytes.Buffer
-	if err := capnp.NewEncoder(&buf).Encode(msg); err != nil {
+	data, err := msg.Marshal()
+	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeCancel, &buf), nil
+	return PrependHeader(messages.MessageTypeCancel, data), nil
 }
 
 func CapnprotoToCancel(data []byte) (*messages.Cancel, error) {
-	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
+	msg, err := capnp.Unmarshal(data)
 	if err != nil {
 		return nil, err
 	}

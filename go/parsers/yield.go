@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"bytes"
-
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
@@ -52,23 +50,23 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 		return nil, err
 	}
 
-	yield, err := gen.NewYield(seg)
+	yield, err := gen.NewRootYield(seg)
 	if err != nil {
 		return nil, err
 	}
 
 	yield.SetRequestID(m.RequestID())
 
-	var data bytes.Buffer
-	if err = capnp.NewEncoder(&data).Encode(msg); err != nil {
+	data, err := msg.Marshal()
+	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeYield, &data), nil
+	return PrependHeader(messages.MessageTypeYield, data), nil
 }
 
 func CapnprotoToYield(data, payload []byte) (*messages.Yield, error) {
-	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
+	msg, err := capnp.Unmarshal(data)
 	if err != nil {
 		return nil, err
 	}

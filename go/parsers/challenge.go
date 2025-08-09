@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"bytes"
-
 	"capnproto.org/go/capnp/v3"
 	"github.com/xconnio/wampproto-go/auth"
 
@@ -33,7 +31,7 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		return nil, err
 	}
 
-	challenge, err := gen.NewChallenge(seg)
+	challenge, err := gen.NewRootChallenge(seg)
 	if err != nil {
 		return nil, err
 	}
@@ -55,16 +53,16 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		}
 	}
 
-	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	data, err := msg.Marshal()
+	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeChallenge, &data), nil
+	return PrependHeader(messages.MessageTypeChallenge, data), nil
 }
 
 func CapnprotoToChallenge(data []byte) (*messages.Challenge, error) {
-	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
+	msg, err := capnp.Unmarshal(data)
 	if err != nil {
 		return nil, err
 	}

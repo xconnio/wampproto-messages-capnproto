@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"bytes"
-
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
@@ -27,23 +25,23 @@ func UnregisteredToCapnproto(m *messages.Unregistered) ([]byte, error) {
 		return nil, err
 	}
 
-	unregistered, err := gen.NewUnregistered(seg)
+	unregistered, err := gen.NewRootUnregistered(seg)
 	if err != nil {
 		return nil, err
 	}
 
 	unregistered.SetRequestID(m.RequestID())
 
-	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	data, err := msg.Marshal()
+	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeUnregistered, &data), nil
+	return PrependHeader(messages.MessageTypeUnregistered, data), nil
 }
 
 func CapnprotoToUnregistered(data []byte) (*messages.Unregistered, error) {
-	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
+	msg, err := capnp.Unmarshal(data)
 	if err != nil {
 		return nil, err
 	}
