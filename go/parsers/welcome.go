@@ -20,7 +20,12 @@ func (w *Welcome) SessionID() uint64 {
 }
 
 func (w *Welcome) Details() map[string]any {
-	return map[string]any{}
+	authID, _ := w.gen.Authid()
+	authRole, _ := w.gen.Authrole()
+	return map[string]any{
+		"authid":   authID,
+		"authrole": authRole,
+	}
 }
 
 func WelcomeToCapnproto(w *messages.Welcome) ([]byte, error) {

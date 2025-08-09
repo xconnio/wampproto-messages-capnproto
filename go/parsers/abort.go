@@ -10,6 +10,9 @@ import (
 type Abort struct {
 	gen     *gen.Abort
 	payload []byte
+
+	args   []any
+	kwargs map[string]any
 }
 
 func NewAbortFields(g *gen.Abort, payload []byte) messages.AbortFields {
@@ -26,11 +29,23 @@ func (a *Abort) Details() map[string]any {
 }
 
 func (a *Abort) Args() []any {
-	return nil
+	if a.args == nil {
+		if len(a.payload) > 0 {
+			args, kwargs, _ := Deserialize(a.gen.PayloadSerializerID())
+			a.args = args
+			a.kwargs = kwargs
+		}
+	}
+
+	return a.args
 }
 
 func (a *Abort) KwArgs() map[string]any {
-	return nil
+	if a.kwargs == nil {
+
+	}
+
+	return a.kwargs
 }
 
 func AbortToCapnproto(m *messages.Abort) ([]byte, error) {
