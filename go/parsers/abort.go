@@ -8,12 +8,15 @@ import (
 )
 
 type Abort struct {
-	gen     *gen.Abort
-	payload []byte
+	gen *gen.Abort
+	ex  *PayloadExpander
 }
 
 func NewAbortFields(g *gen.Abort, payload []byte) messages.AbortFields {
-	return &Abort{gen: g, payload: payload}
+	return &Abort{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (a *Abort) Reason() string {
@@ -26,11 +29,11 @@ func (a *Abort) Details() map[string]any {
 }
 
 func (a *Abort) Args() []any {
-	return nil
+	return a.ex.Args()
 }
 
 func (a *Abort) KwArgs() map[string]any {
-	return nil
+	return a.ex.Kwargs()
 }
 
 func AbortToCapnproto(m *messages.Abort) ([]byte, error) {

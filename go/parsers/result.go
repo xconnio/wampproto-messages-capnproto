@@ -8,12 +8,15 @@ import (
 )
 
 type Result struct {
-	gen     *gen.Result
-	payload []byte
+	gen *gen.Result
+	ex  *PayloadExpander
 }
 
 func NewResultFields(g *gen.Result, payload []byte) messages.ResultFields {
-	return &Result{gen: g, payload: payload}
+	return &Result{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (r *Result) RequestID() uint64 {
@@ -25,11 +28,11 @@ func (r *Result) Details() map[string]any {
 }
 
 func (r *Result) Args() []any {
-	return nil
+	return r.ex.Args()
 }
 
 func (r *Result) KwArgs() map[string]any {
-	return nil
+	return r.ex.Kwargs()
 }
 
 func (r *Result) PayloadIsBinary() bool {
@@ -37,11 +40,11 @@ func (r *Result) PayloadIsBinary() bool {
 }
 
 func (r *Result) Payload() []byte {
-	return nil
+	return r.ex.Payload()
 }
 
 func (r *Result) PayloadSerializer() uint64 {
-	return 0
+	return r.gen.PayloadSerializerID()
 }
 
 func ResultToCapnproto(m *messages.Result) ([]byte, error) {

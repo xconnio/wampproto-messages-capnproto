@@ -8,12 +8,15 @@ import (
 )
 
 type Error struct {
-	gen     *gen.Error
-	payload []byte
+	gen *gen.Error
+	ex  *PayloadExpander
 }
 
 func NewErrorFields(g *gen.Error, payload []byte) messages.ErrorFields {
-	return &Error{gen: g, payload: payload}
+	return &Error{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (e *Error) MessageType() uint64 {
@@ -34,11 +37,11 @@ func (e *Error) Details() map[string]any {
 }
 
 func (e *Error) Args() []any {
-	return nil
+	return e.ex.Args()
 }
 
 func (e *Error) KwArgs() map[string]any {
-	return nil
+	return e.ex.Kwargs()
 }
 
 func (e *Error) PayloadIsBinary() bool {
@@ -46,11 +49,11 @@ func (e *Error) PayloadIsBinary() bool {
 }
 
 func (e *Error) Payload() []byte {
-	return nil
+	return e.ex.Payload()
 }
 
 func (e *Error) PayloadSerializer() uint64 {
-	return 0
+	return e.gen.PayloadSerializerID()
 }
 
 func ErrorToCapnproto(m *messages.Error) ([]byte, error) {

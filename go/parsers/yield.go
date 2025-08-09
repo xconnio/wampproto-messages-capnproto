@@ -8,12 +8,15 @@ import (
 )
 
 type Yield struct {
-	gen     *gen.Yield
-	payload []byte
+	gen *gen.Yield
+	ex  *PayloadExpander
 }
 
 func NewYieldFields(g *gen.Yield, payload []byte) messages.YieldFields {
-	return &Yield{gen: g, payload: payload}
+	return &Yield{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (y *Yield) RequestID() uint64 {
@@ -25,11 +28,11 @@ func (y *Yield) Options() map[string]any {
 }
 
 func (y *Yield) Args() []any {
-	return nil
+	return y.ex.Args()
 }
 
 func (y *Yield) KwArgs() map[string]any {
-	return nil
+	return y.ex.Kwargs()
 }
 
 func (y *Yield) PayloadIsBinary() bool {
@@ -37,11 +40,11 @@ func (y *Yield) PayloadIsBinary() bool {
 }
 
 func (y *Yield) Payload() []byte {
-	return nil
+	return y.ex.Payload()
 }
 
 func (y *Yield) PayloadSerializer() uint64 {
-	return 0
+	return y.gen.PayloadSerializerID()
 }
 
 func YieldToCapnproto(m *messages.Yield) ([]byte, error) {

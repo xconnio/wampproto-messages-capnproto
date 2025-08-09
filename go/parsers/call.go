@@ -8,12 +8,15 @@ import (
 )
 
 type Call struct {
-	gen     *gen.Call
-	payload []byte
+	gen *gen.Call
+	ex  *PayloadExpander
 }
 
 func NewCallFields(g *gen.Call, payload []byte) messages.CallFields {
-	return &Call{gen: g, payload: payload}
+	return &Call{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (c *Call) RequestID() uint64 {
@@ -26,11 +29,11 @@ func (c *Call) Procedure() string {
 }
 
 func (c *Call) Args() []any {
-	return nil
+	return c.ex.Args()
 }
 
 func (c *Call) KwArgs() map[string]any {
-	return nil
+	return c.ex.Kwargs()
 }
 
 func (c *Call) Options() map[string]any {
