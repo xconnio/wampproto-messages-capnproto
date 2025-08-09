@@ -92,9 +92,60 @@ func (c *CapnprotoSerializer) Serialize(message messages.Message) ([]byte, error
 }
 
 func (c *CapnprotoSerializer) Deserialize(data []byte) (messages.Message, error) {
-	switch data[0] {
+	messageData, payloadData, err := parsers.ExtractMessage(data)
+	if err != nil {
+		return nil, err
+	}
+
+	switch uint64(data[0]) {
+	case messages.MessageTypeHello:
+		return parsers.CapnprotoToHello(messageData)
+	case messages.MessageTypeWelcome:
+		return parsers.CapnprotoToWelcome(messageData)
+	case messages.MessageTypeChallenge:
+		return parsers.CapnprotoToChallenge(messageData)
+	case messages.MessageTypeAuthenticate:
+		return parsers.CapnprotoToAuthenticate(messageData)
+	case messages.MessageTypeAbort:
+		return parsers.CapnprotoToAbort(messageData, payloadData)
+	case messages.MessageTypeError:
+		return parsers.CapnprotoToError(messageData, payloadData)
+	case messages.MessageTypeCancel:
+		return parsers.CapnprotoToCancel(messageData)
+	case messages.MessageTypeInterrupt:
+		return parsers.CapnprotoToInterrupt(messageData)
+	case messages.MessageTypeGoodbye:
+		return parsers.CapnprotoToGoodbye(messageData)
+	case messages.MessageTypeRegister:
+		return parsers.CapnprotoToRegister(messageData)
+	case messages.MessageTypeRegistered:
+		return parsers.CapnprotoToRegistered(messageData)
+	case messages.MessageTypeUnregister:
+		return parsers.CapnprotoToUnregister(messageData)
+	case messages.MessageTypeUnregistered:
+		return parsers.CapnprotoToUnregistered(messageData)
+	case messages.MessageTypeCall:
+		return parsers.CapnprotoToCall(messageData, payloadData)
+	case messages.MessageTypeInvocation:
+		return parsers.CapnprotoToInvocation(messageData, payloadData)
+	case messages.MessageTypeYield:
+		return parsers.CapnprotoToYield(messageData, payloadData)
+	case messages.MessageTypeResult:
+		return parsers.CapnprotoToResult(messageData, payloadData)
+	case messages.MessageTypeSubscribe:
+		return parsers.CapnprotoToSubscribe(messageData)
+	case messages.MessageTypeSubscribed:
+		return parsers.CapnprotoToSubscribed(messageData)
+	case messages.MessageTypeUnsubscribe:
+		return parsers.CapnprotoToUnsubscribe(messageData)
+	case messages.MessageTypeUnsubscribed:
+		return parsers.CapnprotoToUnsubscribed(messageData)
+	case messages.MessageTypePublish:
+		return parsers.CapnprotoToPublish(messageData, payloadData)
 	case messages.MessageTypePublished:
-		return parsers.CapnprotoToPublished(data[1:])
+		return parsers.CapnprotoToPublished(messageData)
+	case messages.MessageTypeEvent:
+		return parsers.CapnprotoToEvent(messageData, payloadData)
 	default:
 		return nil, fmt.Errorf("unknown message type: %v", data[0])
 	}

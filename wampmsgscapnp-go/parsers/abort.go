@@ -10,11 +10,12 @@ import (
 )
 
 type Abort struct {
-	gen *gen.Abort
+	gen     *gen.Abort
+	payload []byte
 }
 
-func NewAbortFields(g *gen.Abort) messages.AbortFields {
-	return &Abort{gen: g}
+func NewAbortFields(g *gen.Abort, payload []byte) messages.AbortFields {
+	return &Abort{gen: g, payload: payload}
 }
 
 func (a *Abort) Reason() string {
@@ -54,10 +55,10 @@ func AbortToCapnproto(m *messages.Abort) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeAbort)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeAbort, &data), nil
 }
 
-func CapnprotoToAbort(data []byte) (*messages.Abort, error) {
+func CapnprotoToAbort(data, payload []byte) (*messages.Abort, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -68,5 +69,5 @@ func CapnprotoToAbort(data []byte) (*messages.Abort, error) {
 		return nil, err
 	}
 
-	return messages.NewAbortWithFields(NewAbortFields(&abort)), nil
+	return messages.NewAbortWithFields(NewAbortFields(&abort, payload)), nil
 }

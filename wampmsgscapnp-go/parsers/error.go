@@ -10,18 +10,19 @@ import (
 )
 
 type Error struct {
-	gen *gen.Error
+	gen     *gen.Error
+	payload []byte
 }
 
-func NewErrorFields(g *gen.Error) messages.ErrorFields {
-	return &Error{gen: g}
+func NewErrorFields(g *gen.Error, payload []byte) messages.ErrorFields {
+	return &Error{gen: g, payload: payload}
 }
 
-func (e *Error) MessageType() int64 {
+func (e *Error) MessageType() uint64 {
 	return e.gen.MessageType()
 }
 
-func (e *Error) RequestID() int64 {
+func (e *Error) RequestID() uint64 {
 	return e.gen.RequestID()
 }
 
@@ -50,7 +51,7 @@ func (e *Error) Payload() []byte {
 	return nil
 }
 
-func (e *Error) PayloadSerializer() int {
+func (e *Error) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -67,6 +68,7 @@ func ErrorToCapnproto(m *messages.Error) ([]byte, error) {
 
 	e.SetMessageType(m.MessageType())
 	e.SetRequestID(m.RequestID())
+	e.SetPayloadSerializerID(m.PayloadSerializer())
 	if err := e.SetUri(m.URI()); err != nil {
 		return nil, err
 	}
@@ -76,10 +78,10 @@ func ErrorToCapnproto(m *messages.Error) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeError)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeError, &data), nil
 }
 
-func CapnprotoToError(data []byte) (*messages.Error, error) {
+func CapnprotoToError(data, payload []byte) (*messages.Error, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -90,5 +92,5 @@ func CapnprotoToError(data []byte) (*messages.Error, error) {
 		return nil, err
 	}
 
-	return messages.NewErrorWithFields(NewErrorFields(&e)), nil
+	return messages.NewErrorWithFields(NewErrorFields(&e, payload)), nil
 }

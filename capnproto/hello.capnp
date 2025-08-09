@@ -35,14 +35,12 @@ struct Hello {
         struct Publisher {
             publisherIdentification @0 :Bool;
             publisherExclusion @1 :Bool;
-            subscriberBlackWhiteListing @2 :Bool;
-            acknowledgeEventReceived @3: Bool;
+            acknowledgeEventReceived @2: Bool;
         }
 
         struct Subscriber {
             publisherIdentification @0 :Bool;
             patternBasedSubscription @1 :Bool;
-            eventHistory @2 :Bool;
         }
     }
 }

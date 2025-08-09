@@ -13,12 +13,12 @@ type Call capnp.Struct
 const Call_TypeID = 0xac3d3f012fe6497c
 
 func NewCall(s *capnp.Segment) (Call, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Call(st), err
 }
 
 func NewRootCall(s *capnp.Segment) (Call, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Call(st), err
 }
 
@@ -54,12 +54,12 @@ func (s Call) Message() *capnp.Message {
 func (s Call) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Call) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Call) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Call) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Call) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Call) Procedure() (string, error) {
@@ -80,12 +80,20 @@ func (s Call) SetProcedure(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Call) PayloadSerializerID() uint64 {
+	return capnp.Struct(s).Uint64(8)
+}
+
+func (s Call) SetPayloadSerializerID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
+}
+
 // Call_List is a list of Call.
 type Call_List = capnp.StructList[Call]
 
 // NewCall creates a new list of Call.
 func NewCall_List(s *capnp.Segment, sz int32) (Call_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1}, sz)
 	return capnp.StructList[Call](l), err
 }
 

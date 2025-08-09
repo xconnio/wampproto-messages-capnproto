@@ -54,12 +54,12 @@ func (s Cancel) Message() *capnp.Message {
 func (s Cancel) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Cancel) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Cancel) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Cancel) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Cancel) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Cancel_List is a list of Cancel.

@@ -5,7 +5,8 @@ $Go.package("gen");
 $Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Error {
-    messageType @0 :Int64;
-    requestID @1 :Int64;
+    messageType @0 :UInt64;
+    requestID @1 :UInt64;
     uri @2 :Text;
+    payloadSerializerID @3 :UInt64;
 }

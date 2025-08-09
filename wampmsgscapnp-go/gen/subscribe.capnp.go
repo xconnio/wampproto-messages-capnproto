@@ -13,12 +13,12 @@ type Subscribe capnp.Struct
 const Subscribe_TypeID = 0xa0e05e5fb8875d8b
 
 func NewSubscribe(s *capnp.Segment) (Subscribe, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Subscribe(st), err
 }
 
 func NewRootSubscribe(s *capnp.Segment) (Subscribe, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
 	return Subscribe(st), err
 }
 
@@ -54,12 +54,12 @@ func (s Subscribe) Message() *capnp.Message {
 func (s Subscribe) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Subscribe) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Subscribe) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Subscribe) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Subscribe) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Subscribe) Topic() (string, error) {
@@ -80,12 +80,20 @@ func (s Subscribe) SetTopic(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Subscribe) Match() Subscribe_Match {
+	return Subscribe_Match(capnp.Struct(s).Uint16(8))
+}
+
+func (s Subscribe) SetMatch(v Subscribe_Match) {
+	capnp.Struct(s).SetUint16(8, uint16(v))
+}
+
 // Subscribe_List is a list of Subscribe.
 type Subscribe_List = capnp.StructList[Subscribe]
 
 // NewSubscribe creates a new list of Subscribe.
 func NewSubscribe_List(s *capnp.Segment, sz int32) (Subscribe_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1}, sz)
 	return capnp.StructList[Subscribe](l), err
 }
 
@@ -95,4 +103,53 @@ type Subscribe_Future struct{ *capnp.Future }
 func (f Subscribe_Future) Struct() (Subscribe, error) {
 	p, err := f.Future.Ptr()
 	return Subscribe(p.Struct()), err
+}
+
+type Subscribe_Match uint16
+
+// Subscribe_Match_TypeID is the unique identifier for the type Subscribe_Match.
+const Subscribe_Match_TypeID = 0xbf1e3ba20df77b7e
+
+// Values of Subscribe_Match.
+const (
+	Subscribe_Match_exact    Subscribe_Match = 0
+	Subscribe_Match_prefix   Subscribe_Match = 1
+	Subscribe_Match_wildcard Subscribe_Match = 2
+)
+
+// String returns the enum's constant name.
+func (c Subscribe_Match) String() string {
+	switch c {
+	case Subscribe_Match_exact:
+		return "exact"
+	case Subscribe_Match_prefix:
+		return "prefix"
+	case Subscribe_Match_wildcard:
+		return "wildcard"
+
+	default:
+		return ""
+	}
+}
+
+// Subscribe_MatchFromString returns the enum value with a name,
+// or the zero value if there's no such value.
+func Subscribe_MatchFromString(c string) Subscribe_Match {
+	switch c {
+	case "exact":
+		return Subscribe_Match_exact
+	case "prefix":
+		return Subscribe_Match_prefix
+	case "wildcard":
+		return Subscribe_Match_wildcard
+
+	default:
+		return 0
+	}
+}
+
+type Subscribe_Match_List = capnp.EnumList[Subscribe_Match]
+
+func NewSubscribe_Match_List(s *capnp.Segment, sz int32) (Subscribe_Match_List, error) {
+	return capnp.NewEnumList[Subscribe_Match](s, sz)
 }

@@ -6,4 +6,8 @@ $Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Challenge {
     authMethod @0 :Text;
+    challenge @1 :Text;
+    salt @2 :Text;
+    iterations @3 :UInt32;
+    keylen @4 :UInt16;
 }

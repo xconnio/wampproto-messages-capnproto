@@ -17,7 +17,7 @@ func NewWelcomeFields(g *gen.Welcome) messages.WelcomeFields {
 	return &Welcome{gen: g}
 }
 
-func (w *Welcome) SessionID() int64 {
+func (w *Welcome) SessionID() uint64 {
 	return w.gen.SessionID()
 }
 
@@ -43,8 +43,7 @@ func WelcomeToCapnproto(w *messages.Welcome) ([]byte, error) {
 		return nil, err
 	}
 
-	byteValue := byte(messages.MessageTypeWelcome & 0xFF)
-	return append([]byte{byteValue}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeWelcome, &data), nil
 }
 
 func CapnprotoToWelcome(data []byte) (*messages.Welcome, error) {

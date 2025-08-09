@@ -54,20 +54,20 @@ func (s Subscribed) Message() *capnp.Message {
 func (s Subscribed) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Subscribed) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Subscribed) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Subscribed) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Subscribed) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Subscribed) SubscriptionID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Subscribed) SubscriptionID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Subscribed) SetSubscriptionID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Subscribed) SetSubscriptionID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Subscribed_List is a list of Subscribed.

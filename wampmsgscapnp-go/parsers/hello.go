@@ -32,12 +32,14 @@ func (h *Hello) AuthMethods() []string {
 	if err != nil {
 		return nil
 	}
-	var authmethods []string
+
+	var authMethods []string
 	for i := 0; i < list.Len(); i++ {
-		authmethod, _ := list.At(i)
-		authmethods = append(authmethods, authmethod)
+		authMethod, _ := list.At(i)
+		authMethods = append(authMethods, authMethod)
 	}
-	return authmethods
+
+	return authMethods
 }
 
 func (h *Hello) AuthExtra() map[string]any {
@@ -73,7 +75,6 @@ func (h *Hello) Roles() map[string]any {
 		roles["publisher"] = map[string]any{
 			"publisher_identification":   r.PublisherIdentification(),
 			"publisher_exclusion":        r.PublisherExclusion(),
-			"subscriber_blackwhite_list": r.SubscriberBlackWhiteListing(),
 			"acknowledge_event_received": r.AcknowledgeEventReceived(),
 		}
 	}
@@ -81,7 +82,6 @@ func (h *Hello) Roles() map[string]any {
 		roles["subscriber"] = map[string]any{
 			"publisher_identification":   r.PublisherIdentification(),
 			"pattern_based_subscription": r.PatternBasedSubscription(),
-			"event_history":              r.EventHistory(),
 		}
 	}
 
@@ -175,9 +175,6 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 			if v, ok := publisherMap["publisher_exclusion"].(bool); ok {
 				publisher.SetPublisherExclusion(v)
 			}
-			if v, ok := publisherMap["subscriber_blackwhite_list"].(bool); ok {
-				publisher.SetSubscriberBlackWhiteListing(v)
-			}
 			if v, ok := publisherMap["acknowledge_event_received"].(bool); ok {
 				publisher.SetAcknowledgeEventReceived(v)
 			}
@@ -194,24 +191,21 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 			if v, ok := subscriberMap["pattern_based_subscription"].(bool); ok {
 				subscriber.SetPatternBasedSubscription(v)
 			}
-			if v, ok := subscriberMap["event_history"].(bool); ok {
-				subscriber.SetEventHistory(v)
-			}
+
 			_ = roles.SetSubscriber(subscriber)
 		}
 	}
 
-	if err := hello.SetRoles(roles); err != nil {
+	if err = hello.SetRoles(roles); err != nil {
 		return nil, err
 	}
 
 	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	if err = capnp.NewEncoder(&data).Encode(msg); err != nil {
 		return nil, err
 	}
 
-	byteValue := byte(messages.MessageTypeHello & 0xFF)
-	return append([]byte{byteValue}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeHello, &data), nil
 }
 
 func CapnprotoToHello(data []byte) (*messages.Hello, error) {

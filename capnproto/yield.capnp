@@ -5,5 +5,6 @@ $Go.package("gen");
 $Go.import("github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go");
 
 struct Yield {
-    requestID @0 :Int64;
+    requestID @0 :UInt64;
+    payloadSerializerID @1 :UInt64;
 }

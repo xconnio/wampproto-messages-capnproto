@@ -13,12 +13,12 @@ type Challenge capnp.Struct
 const Challenge_TypeID = 0xf93c45ad003b0423
 
 func NewChallenge(s *capnp.Segment) (Challenge, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	return Challenge(st), err
 }
 
 func NewRootChallenge(s *capnp.Segment) (Challenge, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	return Challenge(st), err
 }
 
@@ -72,12 +72,64 @@ func (s Challenge) SetAuthMethod(v string) error {
 	return capnp.Struct(s).SetText(0, v)
 }
 
+func (s Challenge) Challenge() (string, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.Text(), err
+}
+
+func (s Challenge) HasChallenge() bool {
+	return capnp.Struct(s).HasPtr(1)
+}
+
+func (s Challenge) ChallengeBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s Challenge) SetChallenge(v string) error {
+	return capnp.Struct(s).SetText(1, v)
+}
+
+func (s Challenge) Salt() (string, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.Text(), err
+}
+
+func (s Challenge) HasSalt() bool {
+	return capnp.Struct(s).HasPtr(2)
+}
+
+func (s Challenge) SaltBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s Challenge) SetSalt(v string) error {
+	return capnp.Struct(s).SetText(2, v)
+}
+
+func (s Challenge) Iterations() uint32 {
+	return capnp.Struct(s).Uint32(0)
+}
+
+func (s Challenge) SetIterations(v uint32) {
+	capnp.Struct(s).SetUint32(0, v)
+}
+
+func (s Challenge) Keylen() uint16 {
+	return capnp.Struct(s).Uint16(4)
+}
+
+func (s Challenge) SetKeylen(v uint16) {
+	capnp.Struct(s).SetUint16(4, v)
+}
+
 // Challenge_List is a list of Challenge.
 type Challenge_List = capnp.StructList[Challenge]
 
 // NewChallenge creates a new list of Challenge.
 func NewChallenge_List(s *capnp.Segment, sz int32) (Challenge_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
 	return capnp.StructList[Challenge](l), err
 }
 

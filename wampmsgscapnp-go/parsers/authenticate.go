@@ -37,7 +37,7 @@ func AuthenticateToCapnproto(m *messages.Authenticate) ([]byte, error) {
 		return nil, err
 	}
 
-	if err := auth.SetSignature(m.Signature()); err != nil {
+	if err = auth.SetSignature(m.Signature()); err != nil {
 		return nil, err
 	}
 
@@ -46,7 +46,7 @@ func AuthenticateToCapnproto(m *messages.Authenticate) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeAuthenticate)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeAuthenticate, &data), nil
 }
 
 func CapnprotoToAuthenticate(data []byte) (*messages.Authenticate, error) {

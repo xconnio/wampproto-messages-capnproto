@@ -17,11 +17,11 @@ func NewPublishedFields(gen *gen.Published) messages.PublishedFields {
 	return &Published{gen: gen}
 }
 
-func (p *Published) RequestID() int64 {
+func (p *Published) RequestID() uint64 {
 	return p.gen.RequestID()
 }
 
-func (p *Published) PublicationID() int64 {
+func (p *Published) PublicationID() uint64 {
 	return p.gen.PublicationID()
 }
 
@@ -44,8 +44,7 @@ func PublishedToCapnproto(published *messages.Published) ([]byte, error) {
 		return nil, err
 	}
 
-	byteValue := byte(messages.MessageTypePublished & 0xFF)
-	return append([]byte{byteValue}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypePublished, &data), nil
 }
 
 func CapnprotoToPublished(data []byte) (*messages.Published, error) {

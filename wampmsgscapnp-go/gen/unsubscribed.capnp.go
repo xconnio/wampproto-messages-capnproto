@@ -54,12 +54,12 @@ func (s Unsubscribed) Message() *capnp.Message {
 func (s Unsubscribed) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Unsubscribed) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Unsubscribed) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Unsubscribed) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Unsubscribed) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Unsubscribed_List is a list of Unsubscribed.

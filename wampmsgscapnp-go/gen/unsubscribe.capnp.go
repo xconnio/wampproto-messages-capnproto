@@ -54,20 +54,20 @@ func (s Unsubscribe) Message() *capnp.Message {
 func (s Unsubscribe) Segment() *capnp.Segment {
 	return capnp.Struct(s).Segment()
 }
-func (s Unsubscribe) RequestID() int64 {
-	return int64(capnp.Struct(s).Uint64(0))
+func (s Unsubscribe) RequestID() uint64 {
+	return capnp.Struct(s).Uint64(0)
 }
 
-func (s Unsubscribe) SetRequestID(v int64) {
-	capnp.Struct(s).SetUint64(0, uint64(v))
+func (s Unsubscribe) SetRequestID(v uint64) {
+	capnp.Struct(s).SetUint64(0, v)
 }
 
-func (s Unsubscribe) SubscriptionID() int64 {
-	return int64(capnp.Struct(s).Uint64(8))
+func (s Unsubscribe) SubscriptionID() uint64 {
+	return capnp.Struct(s).Uint64(8)
 }
 
-func (s Unsubscribe) SetSubscriptionID(v int64) {
-	capnp.Struct(s).SetUint64(8, uint64(v))
+func (s Unsubscribe) SetSubscriptionID(v uint64) {
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // Unsubscribe_List is a list of Unsubscribe.

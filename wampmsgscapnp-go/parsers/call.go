@@ -10,14 +10,15 @@ import (
 )
 
 type Call struct {
-	gen *gen.Call
+	gen     *gen.Call
+	payload []byte
 }
 
-func NewCallFields(g *gen.Call) messages.CallFields {
-	return &Call{gen: g}
+func NewCallFields(g *gen.Call, payload []byte) messages.CallFields {
+	return &Call{gen: g, payload: payload}
 }
 
-func (c *Call) RequestID() int64 {
+func (c *Call) RequestID() uint64 {
 	return c.gen.RequestID()
 }
 
@@ -46,7 +47,7 @@ func (c *Call) Payload() []byte {
 	return nil
 }
 
-func (c *Call) PayloadSerializer() int {
+func (c *Call) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -62,19 +63,20 @@ func CallToCapnproto(m *messages.Call) ([]byte, error) {
 	}
 
 	call.SetRequestID(m.RequestID())
-	if err := call.SetProcedure(m.Procedure()); err != nil {
+	call.SetPayloadSerializerID(m.PayloadSerializer())
+	if err = call.SetProcedure(m.Procedure()); err != nil {
 		return nil, err
 	}
 
 	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	if err = capnp.NewEncoder(&data).Encode(msg); err != nil {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeCall)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeCall, &data), nil
 }
 
-func CapnprotoToCall(data []byte) (*messages.Call, error) {
+func CapnprotoToCall(data, payload []byte) (*messages.Call, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -85,5 +87,5 @@ func CapnprotoToCall(data []byte) (*messages.Call, error) {
 		return nil, err
 	}
 
-	return messages.NewCallWithFields(NewCallFields(&call)), nil
+	return messages.NewCallWithFields(NewCallFields(&call, payload)), nil
 }

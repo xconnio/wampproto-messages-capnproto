@@ -17,7 +17,7 @@ func NewRegisterFields(g *gen.Register) messages.RegisterFields {
 	return &Register{gen: g}
 }
 
-func (r *Register) RequestID() int64 {
+func (r *Register) RequestID() uint64 {
 	return r.gen.RequestID()
 }
 
@@ -52,7 +52,7 @@ func RegisterToCapnproto(m *messages.Register) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeRegister)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeRegister, &data), nil
 }
 
 func CapnprotoToRegister(data []byte) (*messages.Register, error) {
