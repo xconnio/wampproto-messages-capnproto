@@ -7,7 +7,7 @@ import (
 	"github.com/xconnio/wampproto-go/auth"
 
 	"github.com/xconnio/wampproto-go/messages"
-	"github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go/gen"
+	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )
 
 type Challenge struct {
