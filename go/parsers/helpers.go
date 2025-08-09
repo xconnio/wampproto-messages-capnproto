@@ -31,3 +31,55 @@ func ExtractMessage(data []byte) ([]byte, []byte, error) {
 
 	return messageData, payloadData, nil
 }
+
+type PayloadExpander struct {
+	expanded   bool
+	payload    []byte
+	serializer uint64
+
+	args   []any
+	kwargs map[string]any
+}
+
+func (p *PayloadExpander) NewPayloadExpander(serializer uint64, payload []byte) *PayloadExpander {
+	return &PayloadExpander{
+		serializer: serializer,
+		payload:    payload,
+	}
+}
+
+func (p *PayloadExpander) Expand() error {
+	args, kwargs, err := Decode(p.serializer, p.payload)
+	if err != nil {
+		return err
+	}
+
+	p.args = args
+	p.kwargs = kwargs
+	p.expanded = true
+	return nil
+}
+
+func (p *PayloadExpander) Args() []any {
+	if !p.expanded {
+		if err := p.Expand(); err != nil {
+			return nil
+		}
+	}
+
+	return p.args
+}
+
+func (p *PayloadExpander) Kwargs() map[string]any {
+	if !p.expanded {
+		if err := p.Expand(); err != nil {
+			return nil
+		}
+	}
+
+	return p.kwargs
+}
+
+func (p *PayloadExpander) Payload() []byte {
+	return p.payload
+}

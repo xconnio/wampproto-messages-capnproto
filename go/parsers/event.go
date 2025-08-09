@@ -2,19 +2,22 @@ package parsers
 
 import (
 	"capnproto.org/go/capnp/v3"
-	"github.com/xconnio/wampproto-go/util"
 
 	"github.com/xconnio/wampproto-go/messages"
+	"github.com/xconnio/wampproto-go/util"
 	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )
 
 type Event struct {
-	gen     *gen.Event
-	payload []byte
+	gen *gen.Event
+	ex  *PayloadExpander
 }
 
 func NewEventFields(g *gen.Event, payload []byte) messages.EventFields {
-	return &Event{gen: g, payload: payload}
+	return &Event{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (e *Event) SubscriptionID() uint64 {
@@ -25,16 +28,45 @@ func (e *Event) PublicationID() uint64 {
 	return e.gen.PublicationID()
 }
 
+func setDetail(details *map[string]any, key string, value any) {
+	if *details == nil {
+		*details = make(map[string]any)
+	}
+
+	(*details)[key] = value
+}
+
 func (e *Event) Details() map[string]any {
-	return map[string]any{}
+	var details map[string]any
+
+	if e.gen.Publisher() > 0 {
+		setDetail(&details, "publisher", e.gen.Publisher())
+	}
+
+	if e.gen.HasPublisherAuthID() {
+		authID, _ := e.gen.PublisherAuthID()
+		setDetail(&details, "publisher_authid", authID)
+	}
+
+	if e.gen.HasPublisherAuthRole() {
+		authRole, _ := e.gen.PublisherAuthRole()
+		setDetail(&details, "publisher_authrole", authRole)
+	}
+
+	if e.gen.HasTopic() {
+		topic, _ := e.gen.Topic()
+		setDetail(&details, "topic", topic)
+	}
+
+	return details
 }
 
 func (e *Event) Args() []any {
-	return nil
+	return e.ex.Args()
 }
 
 func (e *Event) KwArgs() map[string]any {
-	return nil
+	return e.ex.Kwargs()
 }
 
 func (e *Event) PayloadIsBinary() bool {
@@ -42,11 +74,11 @@ func (e *Event) PayloadIsBinary() bool {
 }
 
 func (e *Event) Payload() []byte {
-	return nil
+	return e.ex.Payload()
 }
 
 func (e *Event) PayloadSerializer() uint64 {
-	return 0
+	return e.gen.PayloadSerializerID()
 }
 
 func EventToCapnproto(m *messages.Event) ([]byte, error) {

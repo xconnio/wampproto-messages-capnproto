@@ -8,12 +8,15 @@ import (
 )
 
 type Invocation struct {
-	gen     *gen.Invocation
-	payload []byte
+	gen *gen.Invocation
+	ex  *PayloadExpander
 }
 
 func NewInvocationFields(g *gen.Invocation, payload []byte) messages.InvocationFields {
-	return &Invocation{gen: g, payload: payload}
+	return &Invocation{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (i *Invocation) RequestID() uint64 {
@@ -25,15 +28,36 @@ func (i *Invocation) RegistrationID() uint64 {
 }
 
 func (i *Invocation) Args() []any {
-	return nil
+	return i.ex.Args()
 }
 
 func (i *Invocation) KwArgs() map[string]any {
-	return nil
+	return i.ex.Kwargs()
 }
 
 func (i *Invocation) Details() map[string]any {
-	return map[string]any{}
+	var details map[string]any
+
+	if i.gen.Caller() > 0 {
+		setDetail(&details, "caller", i.gen.Caller())
+	}
+
+	if i.gen.HasCallerAuthID() {
+		authID, _ := i.gen.CallerAuthID()
+		setDetail(&details, "caller_authid", authID)
+	}
+
+	if i.gen.HasCallerAuthRole() {
+		authRole, _ := i.gen.CallerAuthRole()
+		setDetail(&details, "caller_authrole", authRole)
+	}
+
+	if i.gen.HasProcedure() {
+		topic, _ := i.gen.Procedure()
+		setDetail(&details, "procedure", topic)
+	}
+
+	return details
 }
 
 func (i *Invocation) PayloadIsBinary() bool {
@@ -41,11 +65,11 @@ func (i *Invocation) PayloadIsBinary() bool {
 }
 
 func (i *Invocation) Payload() []byte {
-	return nil
+	return i.ex.Payload()
 }
 
 func (i *Invocation) PayloadSerializer() uint64 {
-	return 0
+	return i.gen.PayloadSerializerID()
 }
 
 func InvocationToCapnproto(m *messages.Invocation) ([]byte, error) {

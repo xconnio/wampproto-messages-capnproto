@@ -8,12 +8,15 @@ import (
 )
 
 type Publish struct {
-	gen     *gen.Publish
-	payload []byte
+	gen *gen.Publish
+	ex  *PayloadExpander
 }
 
 func NewPublishFields(g *gen.Publish, payload []byte) messages.PublishFields {
-	return &Publish{gen: g, payload: payload}
+	return &Publish{
+		gen: g,
+		ex:  &PayloadExpander{payload: payload, serializer: g.PayloadSerializerID()},
+	}
 }
 
 func (p *Publish) RequestID() uint64 {
@@ -26,15 +29,21 @@ func (p *Publish) Topic() string {
 }
 
 func (p *Publish) Options() map[string]any {
-	return map[string]any{}
+	var details map[string]any
+
+	if !p.gen.ExludeMe() {
+		setDetail(&details, "exclude_me", false)
+	}
+
+	return details
 }
 
 func (p *Publish) Args() []any {
-	return nil
+	return p.ex.Args()
 }
 
 func (p *Publish) KwArgs() map[string]any {
-	return nil
+	return p.ex.Kwargs()
 }
 
 func (p *Publish) PayloadIsBinary() bool {
@@ -42,11 +51,11 @@ func (p *Publish) PayloadIsBinary() bool {
 }
 
 func (p *Publish) Payload() []byte {
-	return nil
+	return p.ex.Payload()
 }
 
 func (p *Publish) PayloadSerializer() uint64 {
-	return 0
+	return p.gen.PayloadSerializerID()
 }
 
 func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
