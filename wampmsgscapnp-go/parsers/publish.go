@@ -10,14 +10,15 @@ import (
 )
 
 type Publish struct {
-	gen *gen.Publish
+	gen     *gen.Publish
+	payload []byte
 }
 
-func NewPublishFields(g *gen.Publish) messages.PublishFields {
-	return &Publish{gen: g}
+func NewPublishFields(g *gen.Publish, payload []byte) messages.PublishFields {
+	return &Publish{gen: g, payload: payload}
 }
 
-func (p *Publish) RequestID() int64 {
+func (p *Publish) RequestID() uint64 {
 	return p.gen.RequestID()
 }
 
@@ -46,7 +47,7 @@ func (p *Publish) Payload() []byte {
 	return nil
 }
 
-func (p *Publish) PayloadSerializer() int {
+func (p *Publish) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -71,10 +72,10 @@ func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypePublish)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypePublish, &data), nil
 }
 
-func CapnprotoToPublish(data []byte) (*messages.Publish, error) {
+func CapnprotoToPublish(data, payload []byte) (*messages.Publish, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -85,5 +86,5 @@ func CapnprotoToPublish(data []byte) (*messages.Publish, error) {
 		return nil, err
 	}
 
-	return messages.NewPublishWithFields(NewPublishFields(&publish)), nil
+	return messages.NewPublishWithFields(NewPublishFields(&publish, payload)), nil
 }

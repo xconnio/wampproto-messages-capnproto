@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"capnproto.org/go/capnp/v3"
+	"github.com/xconnio/wampproto-go/auth"
 
 	"github.com/xconnio/wampproto-go/messages"
 	"github.com/xconnio/wampproto-messages-capnproto/wampmsgscapnp-go/gen"
@@ -37,8 +38,21 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		return nil, err
 	}
 
+	challengeString, _ := m.Extra()["challenge"].(string)
+	if err = challenge.SetChallenge(challengeString); err != nil {
+		return nil, err
+	}
+
 	if err := challenge.SetAuthMethod(m.AuthMethod()); err != nil {
 		return nil, err
+	}
+
+	if m.AuthMethod() == auth.MethodCRA {
+		challenge.SetKeylen(0)
+		challenge.SetIterations(0)
+		if err = challenge.SetSalt(""); err != nil {
+			return nil, err
+		}
 	}
 
 	var data bytes.Buffer
@@ -46,7 +60,7 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeChallenge)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeChallenge, &data), nil
 }
 
 func CapnprotoToChallenge(data []byte) (*messages.Challenge, error) {

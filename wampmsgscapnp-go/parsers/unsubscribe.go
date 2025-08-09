@@ -17,11 +17,11 @@ func NewUnsubscribeFields(g *gen.Unsubscribe) messages.UnsubscribeFields {
 	return &Unsubscribe{gen: g}
 }
 
-func (u *Unsubscribe) RequestID() int64 {
+func (u *Unsubscribe) RequestID() uint64 {
 	return u.gen.RequestID()
 }
 
-func (u *Unsubscribe) SubscriptionID() int64 {
+func (u *Unsubscribe) SubscriptionID() uint64 {
 	return u.gen.SubscriptionID()
 }
 
@@ -44,7 +44,7 @@ func UnsubscribeToCapnproto(m *messages.Unsubscribe) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeUnsubscribe)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeUnsubscribe, &data), nil
 }
 
 func CapnprotoToUnsubscribe(data []byte) (*messages.Unsubscribe, error) {

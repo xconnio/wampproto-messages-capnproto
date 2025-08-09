@@ -17,7 +17,7 @@ func NewInterruptFields(g *gen.Interrupt) messages.InterruptFields {
 	return &Interrupt{gen: g}
 }
 
-func (i *Interrupt) RequestID() int64 {
+func (i *Interrupt) RequestID() uint64 {
 	return i.gen.RequestID()
 }
 
@@ -43,7 +43,7 @@ func InterruptToCapnproto(m *messages.Interrupt) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeInterrupt)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeInterrupt, &data), nil
 }
 
 func CapnprotoToInterrupt(data []byte) (*messages.Interrupt, error) {

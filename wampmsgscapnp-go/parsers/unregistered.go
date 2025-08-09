@@ -17,7 +17,7 @@ func NewUnregisteredFields(g *gen.Unregistered) messages.UnregisteredFields {
 	return &Unregistered{gen: g}
 }
 
-func (u *Unregistered) RequestID() int64 {
+func (u *Unregistered) RequestID() uint64 {
 	return u.gen.RequestID()
 }
 
@@ -39,7 +39,7 @@ func UnregisteredToCapnproto(m *messages.Unregistered) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeUnregistered)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeUnregistered, &data), nil
 }
 
 func CapnprotoToUnregistered(data []byte) (*messages.Unregistered, error) {

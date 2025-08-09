@@ -17,7 +17,7 @@ func NewSubscribeFields(g *gen.Subscribe) messages.SubscribeFields {
 	return &Subscribe{gen: g}
 }
 
-func (s *Subscribe) RequestID() int64 {
+func (s *Subscribe) RequestID() uint64 {
 	return s.gen.RequestID()
 }
 
@@ -51,7 +51,7 @@ func SubscribeToCapnproto(m *messages.Subscribe) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeSubscribe)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeSubscribe, &data), nil
 }
 
 func CapnprotoToSubscribe(data []byte) (*messages.Subscribe, error) {

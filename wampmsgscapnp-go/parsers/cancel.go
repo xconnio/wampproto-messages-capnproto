@@ -17,7 +17,7 @@ func NewCancelFields(g *gen.Cancel) messages.CancelFields {
 	return &Cancel{gen: g}
 }
 
-func (c *Cancel) RequestID() int64 {
+func (c *Cancel) RequestID() uint64 {
 	return c.gen.RequestID()
 }
 
@@ -43,7 +43,7 @@ func CancelToCapnproto(m *messages.Cancel) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeCancel)}, buf.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeCancel, &buf), nil
 }
 
 func CapnprotoToCancel(data []byte) (*messages.Cancel, error) {

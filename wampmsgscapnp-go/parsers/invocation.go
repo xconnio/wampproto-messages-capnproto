@@ -10,18 +10,19 @@ import (
 )
 
 type Invocation struct {
-	gen *gen.Invocation
+	gen     *gen.Invocation
+	payload []byte
 }
 
-func NewInvocationFields(g *gen.Invocation) messages.InvocationFields {
-	return &Invocation{gen: g}
+func NewInvocationFields(g *gen.Invocation, payload []byte) messages.InvocationFields {
+	return &Invocation{gen: g, payload: payload}
 }
 
-func (i *Invocation) RequestID() int64 {
+func (i *Invocation) RequestID() uint64 {
 	return i.gen.RequestID()
 }
 
-func (i *Invocation) RegistrationID() int64 {
+func (i *Invocation) RegistrationID() uint64 {
 	return i.gen.RegistrationID()
 }
 
@@ -45,7 +46,7 @@ func (i *Invocation) Payload() []byte {
 	return nil
 }
 
-func (i *Invocation) PayloadSerializer() int {
+func (i *Invocation) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -68,10 +69,10 @@ func InvocationToCapnproto(m *messages.Invocation) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeInvocation)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeInvocation, &data), nil
 }
 
-func CapnprotoToInvocation(data []byte) (*messages.Invocation, error) {
+func CapnprotoToInvocation(data, payload []byte) (*messages.Invocation, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -82,5 +83,5 @@ func CapnprotoToInvocation(data []byte) (*messages.Invocation, error) {
 		return nil, err
 	}
 
-	return messages.NewInvocationWithFields(NewInvocationFields(&invocation)), nil
+	return messages.NewInvocationWithFields(NewInvocationFields(&invocation, payload)), nil
 }

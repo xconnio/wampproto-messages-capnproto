@@ -10,14 +10,15 @@ import (
 )
 
 type Yield struct {
-	gen *gen.Yield
+	gen     *gen.Yield
+	payload []byte
 }
 
-func NewYieldFields(g *gen.Yield) messages.YieldFields {
-	return &Yield{gen: g}
+func NewYieldFields(g *gen.Yield, payload []byte) messages.YieldFields {
+	return &Yield{gen: g, payload: payload}
 }
 
-func (y *Yield) RequestID() int64 {
+func (y *Yield) RequestID() uint64 {
 	return y.gen.RequestID()
 }
 
@@ -41,7 +42,7 @@ func (y *Yield) Payload() []byte {
 	return nil
 }
 
-func (y *Yield) PayloadSerializer() int {
+func (y *Yield) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -59,14 +60,14 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 	yield.SetRequestID(m.RequestID())
 
 	var data bytes.Buffer
-	if err := capnp.NewEncoder(&data).Encode(msg); err != nil {
+	if err = capnp.NewEncoder(&data).Encode(msg); err != nil {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeYield)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeYield, &data), nil
 }
 
-func CapnprotoToYield(data []byte) (*messages.Yield, error) {
+func CapnprotoToYield(data, payload []byte) (*messages.Yield, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -77,5 +78,5 @@ func CapnprotoToYield(data []byte) (*messages.Yield, error) {
 		return nil, err
 	}
 
-	return messages.NewYieldWithFields(NewYieldFields(&yield)), nil
+	return messages.NewYieldWithFields(NewYieldFields(&yield, payload)), nil
 }

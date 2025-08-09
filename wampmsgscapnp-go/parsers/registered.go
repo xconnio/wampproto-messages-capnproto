@@ -17,11 +17,11 @@ func NewRegisteredFields(g *gen.Registered) messages.RegisteredFields {
 	return &Registered{gen: g}
 }
 
-func (r *Registered) RequestID() int64 {
+func (r *Registered) RequestID() uint64 {
 	return r.gen.RequestID()
 }
 
-func (r *Registered) RegistrationID() int64 {
+func (r *Registered) RegistrationID() uint64 {
 	return r.gen.RegistrationID()
 }
 
@@ -44,7 +44,7 @@ func RegisteredToCapnproto(m *messages.Registered) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeRegistered)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeRegistered, &data), nil
 }
 
 func CapnprotoToRegistered(data []byte) (*messages.Registered, error) {

@@ -10,14 +10,15 @@ import (
 )
 
 type Result struct {
-	gen *gen.Result
+	gen     *gen.Result
+	payload []byte
 }
 
-func NewResultFields(g *gen.Result) messages.ResultFields {
-	return &Result{gen: g}
+func NewResultFields(g *gen.Result, payload []byte) messages.ResultFields {
+	return &Result{gen: g, payload: payload}
 }
 
-func (r *Result) RequestID() int64 {
+func (r *Result) RequestID() uint64 {
 	return r.gen.RequestID()
 }
 
@@ -41,7 +42,7 @@ func (r *Result) Payload() []byte {
 	return nil
 }
 
-func (r *Result) PayloadSerializer() int {
+func (r *Result) PayloadSerializer() uint64 {
 	return 0
 }
 
@@ -63,10 +64,10 @@ func ResultToCapnproto(m *messages.Result) ([]byte, error) {
 		return nil, err
 	}
 
-	return append([]byte{byte(messages.MessageTypeResult)}, data.Bytes()...), nil
+	return PrependHeader(messages.MessageTypeResult, &data), nil
 }
 
-func CapnprotoToResult(data []byte) (*messages.Result, error) {
+func CapnprotoToResult(data, payload []byte) (*messages.Result, error) {
 	msg, err := capnp.NewDecoder(bytes.NewReader(data)).Decode()
 	if err != nil {
 		return nil, err
@@ -77,5 +78,5 @@ func CapnprotoToResult(data []byte) (*messages.Result, error) {
 		return nil, err
 	}
 
-	return messages.NewResultWithFields(NewResultFields(&result)), nil
+	return messages.NewResultWithFields(NewResultFields(&result, payload)), nil
 }
