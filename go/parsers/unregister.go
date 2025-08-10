@@ -42,7 +42,7 @@ func UnregisterToCapnproto(m *messages.Unregister) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeUnregister, data), nil
+	return PrependHeader(messages.MessageTypeUnregister, data, nil), nil
 }
 
 func CapnprotoToUnregister(data []byte) (*messages.Unregister, error) {

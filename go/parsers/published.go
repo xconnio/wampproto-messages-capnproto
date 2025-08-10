@@ -42,7 +42,7 @@ func PublishedToCapnproto(published *messages.Published) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypePublished, data), nil
+	return PrependHeader(messages.MessageTypePublished, data, nil), nil
 }
 
 func CapnprotoToPublished(data []byte) (*messages.Published, error) {

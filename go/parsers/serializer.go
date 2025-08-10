@@ -10,13 +10,25 @@ import (
 )
 
 func EncodeToCBOR(args []any, kwargs map[string]any) ([]byte, error) {
-	data := []any{args, kwargs}
+	data, err := prepareForEncode(args, kwargs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, nil
+	}
+
 	return cbor.Marshal(data)
 }
 
 func decode(arr []any) ([]any, map[string]any, error) {
-	if len(arr) != 2 {
-		return nil, nil, fmt.Errorf("expected 2 elements [args, kwargs], got %d", len(arr))
+	if len(arr) == 0 {
+		return nil, nil, nil
+	}
+
+	if len(arr) > 2 {
+		return nil, nil, fmt.Errorf("too many args to decode")
 	}
 
 	args, ok := arr[0].([]any)
@@ -24,12 +36,36 @@ func decode(arr []any) ([]any, map[string]any, error) {
 		return nil, nil, fmt.Errorf("args element is not []any")
 	}
 
-	kwargs, ok := arr[1].(map[string]any)
-	if !ok {
-		return nil, nil, fmt.Errorf("kwargs element is not map[string]any")
+	var kwargs map[string]any
+	if len(arr) == 2 {
+		kwargs, ok = arr[1].(map[string]any)
+		if !ok {
+			return nil, nil, fmt.Errorf("kwargs element is not map[string]any")
+		}
 	}
 
 	return args, kwargs, nil
+}
+
+func prepareForEncode(args []any, kwargs map[string]any) ([]any, error) {
+	var data []any
+	if len(args) != 0 {
+		data = append(data, args)
+	}
+
+	if len(kwargs) != 0 {
+		if len(args) == 0 {
+			data = append(data, []any{})
+		}
+
+		data = append(data, kwargs)
+	}
+
+	if len(data) == 0 {
+		return nil, nil
+	}
+
+	return data, nil
 }
 
 func DecodeFromCBOR(b []byte) ([]any, map[string]any, error) {
@@ -42,7 +78,15 @@ func DecodeFromCBOR(b []byte) ([]any, map[string]any, error) {
 }
 
 func EncodeToMsgPack(args []any, kwargs map[string]any) ([]byte, error) {
-	data := []any{args, kwargs}
+	data, err := prepareForEncode(args, kwargs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, nil
+	}
+
 	return msgpack.Marshal(data)
 }
 
@@ -56,7 +100,15 @@ func DecodeFromMsgPack(b []byte) ([]any, map[string]any, error) {
 }
 
 func EncodeToJSON(args []any, kwargs map[string]any) ([]byte, error) {
-	data := []any{args, kwargs}
+	data, err := prepareForEncode(args, kwargs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, nil
+	}
+
 	return json.Marshal(data)
 }
 
@@ -79,5 +131,18 @@ func Decode(serializerID uint64, payload []byte) ([]any, map[string]any, error) 
 		return DecodeFromMsgPack(payload)
 	default:
 		return nil, nil, fmt.Errorf("serializer %d not recognized", serializerID)
+	}
+}
+
+func Encode(serializerID uint64, args []any, kwargs map[string]any) ([]byte, error) {
+	switch serializerID {
+	case serializers.JSONSerializerID:
+		return EncodeToJSON(args, kwargs)
+	case serializers.CBORSerializerID:
+		return EncodeToCBOR(args, kwargs)
+	case serializers.MsgPackSerializerID:
+		return EncodeToMsgPack(args, kwargs)
+	default:
+		return nil, fmt.Errorf("serializer %d not recognized", serializerID)
 	}
 }

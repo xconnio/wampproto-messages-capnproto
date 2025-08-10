@@ -5,29 +5,38 @@ import (
 	"fmt"
 )
 
-func PrependHeader(messageType uint64, payload []byte) []byte {
-	result := make([]byte, 3+len(payload))
+const HeaderLength = 3
+
+func PrependHeader(messageType uint64, messageData, payloadData []byte) []byte {
+	payloadLen := len(payloadData)
+	totalLen := HeaderLength + len(messageData) + payloadLen
+
+	result := make([]byte, totalLen)
 
 	result[0] = uint8(messageType)
-	binary.BigEndian.PutUint16(result[1:3], uint16(len(payload)))
+	binary.BigEndian.PutUint16(result[1:HeaderLength], uint16(len(messageData)))
 
-	copy(result[3:], payload)
+	copy(result[HeaderLength:], messageData)
+
+	if payloadLen > 0 {
+		copy(result[HeaderLength+len(messageData):], payloadData)
+	}
 
 	return result
 }
 
 func ExtractMessage(data []byte) ([]byte, []byte, error) {
-	if len(data) < 3 {
-		return nil, nil, fmt.Errorf("invalid message length must be at least 3 bytes")
+	if len(data) < HeaderLength {
+		return nil, nil, fmt.Errorf("invalid message length, must be at least %d bytes", HeaderLength)
 	}
 
-	messageLength := binary.BigEndian.Uint16(data[1:3])
-	if len(data) < 3+int(messageLength) {
+	messageLength := binary.BigEndian.Uint16(data[1:HeaderLength])
+	if len(data) < HeaderLength+int(messageLength) {
 		return nil, nil, fmt.Errorf("invalid message length")
 	}
 
-	messageData := data[3 : 3+int(messageLength)]
-	payloadData := data[3+int(messageLength):]
+	messageData := data[HeaderLength : HeaderLength+int(messageLength)]
+	payloadData := data[HeaderLength+int(messageLength):]
 
 	return messageData, payloadData, nil
 }

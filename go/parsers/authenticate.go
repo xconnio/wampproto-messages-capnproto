@@ -44,7 +44,7 @@ func AuthenticateToCapnproto(m *messages.Authenticate) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeAuthenticate, data), nil
+	return PrependHeader(messages.MessageTypeAuthenticate, data, nil), nil
 }
 
 func CapnprotoToAuthenticate(data []byte) (*messages.Authenticate, error) {

@@ -203,7 +203,7 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeHello, data), nil
+	return PrependHeader(messages.MessageTypeHello, data, nil), nil
 }
 
 func CapnprotoToHello(data []byte) (*messages.Hello, error) {

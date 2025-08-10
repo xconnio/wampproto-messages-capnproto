@@ -41,7 +41,7 @@ func InterruptToCapnproto(m *messages.Interrupt) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeInterrupt, data), nil
+	return PrependHeader(messages.MessageTypeInterrupt, data, nil), nil
 }
 
 func CapnprotoToInterrupt(data []byte) (*messages.Interrupt, error) {

@@ -42,7 +42,7 @@ func UnsubscribeToCapnproto(m *messages.Unsubscribe) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeUnsubscribe, data), nil
+	return PrependHeader(messages.MessageTypeUnsubscribe, data, nil), nil
 }
 
 func CapnprotoToUnsubscribe(data []byte) (*messages.Unsubscribe, error) {
