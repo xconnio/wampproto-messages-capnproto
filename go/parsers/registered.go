@@ -42,7 +42,7 @@ func RegisteredToCapnproto(m *messages.Registered) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeRegistered, data), nil
+	return PrependHeader(messages.MessageTypeRegistered, data, nil), nil
 }
 
 func CapnprotoToRegistered(data []byte) (*messages.Registered, error) {

@@ -58,7 +58,7 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeChallenge, data), nil
+	return PrependHeader(messages.MessageTypeChallenge, data, nil), nil
 }
 
 func CapnprotoToChallenge(data []byte) (*messages.Challenge, error) {

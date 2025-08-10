@@ -37,7 +37,7 @@ func UnregisteredToCapnproto(m *messages.Unregistered) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeUnregistered, data), nil
+	return PrependHeader(messages.MessageTypeUnregistered, data, nil), nil
 }
 
 func CapnprotoToUnregistered(data []byte) (*messages.Unregistered, error) {

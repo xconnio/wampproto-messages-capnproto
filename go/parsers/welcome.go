@@ -51,7 +51,7 @@ func WelcomeToCapnproto(w *messages.Welcome) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeWelcome, data), nil
+	return PrependHeader(messages.MessageTypeWelcome, data, nil), nil
 }
 
 func CapnprotoToWelcome(data []byte) (*messages.Welcome, error) {

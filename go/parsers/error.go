@@ -4,6 +4,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
+	"github.com/xconnio/wampproto-go/serializers"
 	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )
 
@@ -70,7 +71,14 @@ func ErrorToCapnproto(m *messages.Error) ([]byte, error) {
 	e.SetMessageType(m.MessageType())
 	e.SetRequestID(m.RequestID())
 	e.SetPayloadSerializerID(m.PayloadSerializer())
-	if err := e.SetUri(m.URI()); err != nil {
+	if err = e.SetUri(m.URI()); err != nil {
+		return nil, err
+	}
+
+	e.SetPayloadSerializerID(serializers.MsgPackSerializerID)
+
+	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	if err != nil {
 		return nil, err
 	}
 
@@ -79,7 +87,7 @@ func ErrorToCapnproto(m *messages.Error) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeError, data), nil
+	return PrependHeader(messages.MessageTypeError, data, payload), nil
 }
 
 func CapnprotoToError(data, payload []byte) (*messages.Error, error) {

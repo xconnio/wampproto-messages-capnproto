@@ -49,7 +49,7 @@ func SubscribeToCapnproto(m *messages.Subscribe) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeSubscribe, data), nil
+	return PrependHeader(messages.MessageTypeSubscribe, data, nil), nil
 }
 
 func CapnprotoToSubscribe(data []byte) (*messages.Subscribe, error) {

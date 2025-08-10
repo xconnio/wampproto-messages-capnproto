@@ -41,7 +41,7 @@ func CancelToCapnproto(m *messages.Cancel) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeCancel, data), nil
+	return PrependHeader(messages.MessageTypeCancel, data, nil), nil
 }
 
 func CapnprotoToCancel(data []byte) (*messages.Cancel, error) {

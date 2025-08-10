@@ -4,6 +4,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
+	"github.com/xconnio/wampproto-go/serializers"
 	"github.com/xconnio/wampproto-go/util"
 	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )
@@ -115,12 +116,19 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 		}
 	}
 
+	event.SetPayloadSerializerID(serializers.MsgPackSerializerID)
+
+	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	if err != nil {
+		return nil, err
+	}
+
 	data, err := msg.Marshal()
 	if err != nil {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeEvent, data), nil
+	return PrependHeader(messages.MessageTypeEvent, data, payload), nil
 }
 
 func CapnprotoToEvent(data, payload []byte) (*messages.Event, error) {

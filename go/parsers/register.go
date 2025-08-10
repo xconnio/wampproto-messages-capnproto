@@ -50,7 +50,7 @@ func RegisterToCapnproto(m *messages.Register) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeRegister, data), nil
+	return PrependHeader(messages.MessageTypeRegister, data, nil), nil
 }
 
 func CapnprotoToRegister(data []byte) (*messages.Register, error) {

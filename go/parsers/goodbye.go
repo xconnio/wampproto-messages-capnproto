@@ -44,7 +44,7 @@ func GoodbyeToCapnproto(m *messages.GoodBye) ([]byte, error) {
 		return nil, err
 	}
 
-	return PrependHeader(messages.MessageTypeGoodbye, data), nil
+	return PrependHeader(messages.MessageTypeGoodbye, data, nil), nil
 }
 
 func CapnprotoToGoodbye(data []byte) (*messages.GoodBye, error) {
