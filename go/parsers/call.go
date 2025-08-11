@@ -50,7 +50,7 @@ func (c *Call) Payload() []byte {
 }
 
 func (c *Call) PayloadSerializer() uint64 {
-	return 0
+	return c.gen.PayloadSerializerID()
 }
 
 func CallToCapnproto(m *messages.Call) ([]byte, error) {
@@ -71,9 +71,15 @@ func CallToCapnproto(m *messages.Call) ([]byte, error) {
 
 	payloadSerializer := selectPayloadSerializer(m.Options())
 	call.SetPayloadSerializerID(payloadSerializer)
-	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
-	if err != nil {
-		return nil, err
+
+	var payload []byte
+	if m.PayloadIsBinary() {
+		payload = m.Payload()
+	} else {
+		payload, err = serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	data, err := msg.MarshalPacked()

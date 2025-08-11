@@ -60,12 +60,17 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 	}
 
 	yield.SetRequestID(m.RequestID())
-
 	payloadSerializer := selectPayloadSerializer(m.Options())
 	yield.SetPayloadSerializerID(payloadSerializer)
-	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
-	if err != nil {
-		return nil, err
+
+	var payload []byte
+	if m.PayloadIsBinary() {
+		payload = m.Payload()
+	} else {
+		payload, err = serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	data, err := msg.MarshalPacked()
