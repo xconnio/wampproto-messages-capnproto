@@ -116,9 +116,9 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 		}
 	}
 
-	event.SetPayloadSerializerID(serializers.MsgPackSerializerID)
-
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Details())
+	event.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}

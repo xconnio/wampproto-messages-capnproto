@@ -60,9 +60,10 @@ func ResultToCapnproto(m *messages.Result) ([]byte, error) {
 	}
 
 	result.SetRequestID(m.RequestID())
-	result.SetPayloadSerializerID(serializers.MsgPackSerializerID)
 
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Details())
+	result.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}

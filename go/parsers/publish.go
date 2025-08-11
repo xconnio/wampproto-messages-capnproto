@@ -75,9 +75,9 @@ func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
 		return nil, err
 	}
 
-	publish.SetPayloadSerializerID(serializers.MsgPackSerializerID)
-
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Options())
+	publish.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}

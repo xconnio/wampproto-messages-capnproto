@@ -7,7 +7,7 @@ toolchain go1.23.10
 require (
 	capnproto.org/go/capnp/v3 v3.1.0-alpha.1
 	github.com/stretchr/testify v1.9.0
-	github.com/xconnio/wampproto-go v0.0.0-20250808141813-87f9e9036f8e
+	github.com/xconnio/wampproto-go v0.0.0-20250811153808-9bd788341450
 )
 
 require (

@@ -86,9 +86,10 @@ func InvocationToCapnproto(m *messages.Invocation) ([]byte, error) {
 
 	invocation.SetRequestID(m.RequestID())
 	invocation.SetRegistrationID(m.RegistrationID())
-	invocation.SetPayloadSerializerID(serializers.MsgPackSerializerID)
 
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Details())
+	invocation.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}

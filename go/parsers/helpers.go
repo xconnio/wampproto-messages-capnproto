@@ -3,6 +3,8 @@ package parsers
 import (
 	"encoding/binary"
 	"fmt"
+
+	"github.com/xconnio/wampproto-go/serializers"
 )
 
 const HeaderLength = 3
@@ -58,7 +60,7 @@ func (p *PayloadExpander) NewPayloadExpander(serializer uint64, payload []byte) 
 }
 
 func (p *PayloadExpander) Expand() error {
-	args, kwargs, err := Decode(p.serializer, p.payload)
+	args, kwargs, err := serializers.DeserializePayload(p.serializer, p.payload)
 	if err != nil {
 		return err
 	}
@@ -91,4 +93,13 @@ func (p *PayloadExpander) Kwargs() map[string]any {
 
 func (p *PayloadExpander) Payload() []byte {
 	return p.payload
+}
+
+func selectPayloadSerializer(options map[string]any) uint64 {
+	payloadSerializer, ok := options["x_payload_serializer"].(uint64)
+	if !ok {
+		payloadSerializer = serializers.CBORSerializerID
+	}
+
+	return payloadSerializer
 }

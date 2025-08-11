@@ -1,8 +1,6 @@
 package parsers
 
 import (
-	"fmt"
-
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
@@ -67,14 +65,13 @@ func CallToCapnproto(m *messages.Call) ([]byte, error) {
 	}
 
 	call.SetRequestID(m.RequestID())
-	call.SetPayloadSerializerID(m.PayloadSerializer())
 	if err = call.SetProcedure(m.Procedure()); err != nil {
 		return nil, err
 	}
 
-	call.SetPayloadSerializerID(serializers.MsgPackSerializerID)
-
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Options())
+	call.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +81,6 @@ func CallToCapnproto(m *messages.Call) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println("PAYAAA", len(payload))
 	return PrependHeader(messages.MessageTypeCall, data, payload), nil
 }
 
