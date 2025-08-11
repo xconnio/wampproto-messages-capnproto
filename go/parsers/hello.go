@@ -198,7 +198,7 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +207,7 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 }
 
 func CapnprotoToHello(data []byte) (*messages.Hello, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

@@ -53,7 +53,7 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 		}
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 }
 
 func CapnprotoToChallenge(data []byte) (*messages.Challenge, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

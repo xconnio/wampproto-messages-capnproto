@@ -67,7 +67,7 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 }
 
 func CapnprotoToYield(data, payload []byte) (*messages.Yield, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

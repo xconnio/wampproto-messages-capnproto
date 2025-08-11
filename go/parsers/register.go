@@ -45,7 +45,7 @@ func RegisterToCapnproto(m *messages.Register) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func RegisterToCapnproto(m *messages.Register) ([]byte, error) {
 }
 
 func CapnprotoToRegister(data []byte) (*messages.Register, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

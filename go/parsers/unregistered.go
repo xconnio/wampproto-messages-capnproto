@@ -32,7 +32,7 @@ func UnregisteredToCapnproto(m *messages.Unregistered) ([]byte, error) {
 
 	unregistered.SetRequestID(m.RequestID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func UnregisteredToCapnproto(m *messages.Unregistered) ([]byte, error) {
 }
 
 func CapnprotoToUnregistered(data []byte) (*messages.Unregistered, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

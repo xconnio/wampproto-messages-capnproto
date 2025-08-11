@@ -37,7 +37,7 @@ func PublishedToCapnproto(published *messages.Published) ([]byte, error) {
 	pubed.SetRequestID(published.RequestID())
 	pubed.SetPublicationID(published.PublicationID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func PublishedToCapnproto(published *messages.Published) ([]byte, error) {
 }
 
 func CapnprotoToPublished(data []byte) (*messages.Published, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

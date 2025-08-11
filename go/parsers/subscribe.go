@@ -44,7 +44,7 @@ func SubscribeToCapnproto(m *messages.Subscribe) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func SubscribeToCapnproto(m *messages.Subscribe) ([]byte, error) {
 }
 
 func CapnprotoToSubscribe(data []byte) (*messages.Subscribe, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

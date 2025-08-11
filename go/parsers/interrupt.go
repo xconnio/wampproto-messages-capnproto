@@ -36,7 +36,7 @@ func InterruptToCapnproto(m *messages.Interrupt) ([]byte, error) {
 
 	interrupt.SetRequestID(m.RequestID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func InterruptToCapnproto(m *messages.Interrupt) ([]byte, error) {
 }
 
 func CapnprotoToInterrupt(data []byte) (*messages.Interrupt, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

@@ -59,7 +59,7 @@ func AbortToCapnproto(m *messages.Abort) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func AbortToCapnproto(m *messages.Abort) ([]byte, error) {
 }
 
 func CapnprotoToAbort(data, payload []byte) (*messages.Abort, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

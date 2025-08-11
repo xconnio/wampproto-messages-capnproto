@@ -1,6 +1,8 @@
 package parsers
 
 import (
+	"fmt"
+
 	"capnproto.org/go/capnp/v3"
 
 	"github.com/xconnio/wampproto-go/messages"
@@ -46,7 +48,7 @@ func (c *Call) PayloadIsBinary() bool {
 }
 
 func (c *Call) Payload() []byte {
-	return nil
+	return c.ex.Payload()
 }
 
 func (c *Call) PayloadSerializer() uint64 {
@@ -77,16 +79,17 @@ func CallToCapnproto(m *messages.Call) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
 
+	fmt.Println("PAYAAA", len(payload))
 	return PrependHeader(messages.MessageTypeCall, data, payload), nil
 }
 
 func CapnprotoToCall(data, payload []byte) (*messages.Call, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}
