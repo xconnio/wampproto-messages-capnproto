@@ -2,9 +2,9 @@ package parsers
 
 import (
 	"capnproto.org/go/capnp/v3"
+	"github.com/xconnio/wampproto-go/serializers"
 
 	"github.com/xconnio/wampproto-go/messages"
-	"github.com/xconnio/wampproto-go/serializers"
 	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )
 
@@ -60,9 +60,10 @@ func YieldToCapnproto(m *messages.Yield) ([]byte, error) {
 	}
 
 	yield.SetRequestID(m.RequestID())
-	yield.SetPayloadSerializerID(serializers.MsgPackSerializerID)
 
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Options())
+	yield.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}

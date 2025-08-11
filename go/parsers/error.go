@@ -75,9 +75,9 @@ func ErrorToCapnproto(m *messages.Error) ([]byte, error) {
 		return nil, err
 	}
 
-	e.SetPayloadSerializerID(serializers.MsgPackSerializerID)
-
-	payload, err := Encode(serializers.MsgPackSerializerID, m.Args(), m.KwArgs())
+	payloadSerializer := selectPayloadSerializer(m.Details())
+	e.SetPayloadSerializerID(payloadSerializer)
+	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
 	if err != nil {
 		return nil, err
 	}
