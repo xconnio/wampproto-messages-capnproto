@@ -67,7 +67,7 @@ func ResultToCapnproto(m *messages.Result) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func ResultToCapnproto(m *messages.Result) ([]byte, error) {
 }
 
 func CapnprotoToResult(data, payload []byte) (*messages.Result, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

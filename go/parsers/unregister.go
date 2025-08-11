@@ -37,7 +37,7 @@ func UnregisterToCapnproto(m *messages.Unregister) ([]byte, error) {
 	unregister.SetRequestID(m.RequestID())
 	unregister.SetRegistrationID(m.RegistrationID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func UnregisterToCapnproto(m *messages.Unregister) ([]byte, error) {
 }
 
 func CapnprotoToUnregister(data []byte) (*messages.Unregister, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

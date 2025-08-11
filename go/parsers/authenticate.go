@@ -39,7 +39,7 @@ func AuthenticateToCapnproto(m *messages.Authenticate) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func AuthenticateToCapnproto(m *messages.Authenticate) ([]byte, error) {
 }
 
 func CapnprotoToAuthenticate(data []byte) (*messages.Authenticate, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

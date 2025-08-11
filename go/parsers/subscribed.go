@@ -37,7 +37,7 @@ func SubscribedToCapnproto(m *messages.Subscribed) ([]byte, error) {
 	subscribed.SetRequestID(m.RequestID())
 	subscribed.SetSubscriptionID(m.SubscriptionID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func SubscribedToCapnproto(m *messages.Subscribed) ([]byte, error) {
 }
 
 func CapnprotoToSubscribed(data []byte) (*messages.Subscribed, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

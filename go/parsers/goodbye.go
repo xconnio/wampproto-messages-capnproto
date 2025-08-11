@@ -39,7 +39,7 @@ func GoodbyeToCapnproto(m *messages.GoodBye) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func GoodbyeToCapnproto(m *messages.GoodBye) ([]byte, error) {
 }
 
 func CapnprotoToGoodbye(data []byte) (*messages.GoodBye, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

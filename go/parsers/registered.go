@@ -37,7 +37,7 @@ func RegisteredToCapnproto(m *messages.Registered) ([]byte, error) {
 	registered.SetRequestID(m.RequestID())
 	registered.SetRegistrationID(m.RegistrationID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func RegisteredToCapnproto(m *messages.Registered) ([]byte, error) {
 }
 
 func CapnprotoToRegistered(data []byte) (*messages.Registered, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

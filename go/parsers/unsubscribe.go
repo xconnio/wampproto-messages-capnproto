@@ -37,7 +37,7 @@ func UnsubscribeToCapnproto(m *messages.Unsubscribe) ([]byte, error) {
 	unsubscribe.SetRequestID(m.RequestID())
 	unsubscribe.SetSubscriptionID(m.SubscriptionID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func UnsubscribeToCapnproto(m *messages.Unsubscribe) ([]byte, error) {
 }
 
 func CapnprotoToUnsubscribe(data []byte) (*messages.Unsubscribe, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

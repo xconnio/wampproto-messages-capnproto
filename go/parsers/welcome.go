@@ -46,7 +46,7 @@ func WelcomeToCapnproto(w *messages.Welcome) ([]byte, error) {
 
 	welcome.SetSessionID(w.SessionID())
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func WelcomeToCapnproto(w *messages.Welcome) ([]byte, error) {
 }
 
 func CapnprotoToWelcome(data []byte) (*messages.Welcome, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}

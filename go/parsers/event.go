@@ -123,7 +123,7 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err := msg.Marshal()
+	data, err := msg.MarshalPacked()
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func EventToCapnproto(m *messages.Event) ([]byte, error) {
 }
 
 func CapnprotoToEvent(data, payload []byte) (*messages.Event, error) {
-	msg, err := capnp.Unmarshal(data)
+	msg, err := capnp.UnmarshalPacked(data)
 	if err != nil {
 		return nil, err
 	}
