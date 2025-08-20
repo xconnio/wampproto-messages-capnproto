@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import goodbye as goodbye_message
+from wampproto.messages.goodbye import Goodbye, IGoodbyeFields
 
 from wamp_msgs_capnp.parsers import helpers
 
@@ -12,7 +12,7 @@ module_file = os.path.join(root_dir, "schemas", "goodbye.capnp")
 goodbye_capnp = capnp.load(str(module_file))
 
 
-class Goodbye(goodbye_message.IGoodbyeFields):
+class GoodbyeFields(IGoodbyeFields):
     def __init__(self, gen):
         self._gen = gen
 
@@ -25,17 +25,17 @@ class Goodbye(goodbye_message.IGoodbyeFields):
         return {}
 
 
-def goodbye_to_capnproto(g: goodbye_message.Goodbye) -> bytes:
+def goodbye_to_capnproto(g: Goodbye) -> bytes:
     goodbye = goodbye_capnp.Goodbye.new_message()
     goodbye.reason = g.reason
 
     packed_data = goodbye.to_bytes_packed()
 
-    return helpers.prepend_header(goodbye_message.Goodbye.TYPE, packed_data, b"")
+    return helpers.prepend_header(Goodbye.TYPE, packed_data, b"")
 
 
-def capnproto_to_goodbye(data: bytes) -> goodbye_message.Goodbye:
+def capnproto_to_goodbye(data: bytes) -> Goodbye:
     message_data, _ = helpers.extract_message(data)
     goodbye_obj = goodbye_capnp.Goodbye.from_bytes_packed(message_data)
 
-    return Goodbye(goodbye_obj)
+    return Goodbye(GoodbyeFields(goodbye_obj))

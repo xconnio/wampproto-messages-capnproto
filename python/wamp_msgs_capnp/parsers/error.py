@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import error as error_message
+from wampproto.messages.error import Error, IErrorFields
 from wampproto.serializers.payload import serialize_payload
 
 from wamp_msgs_capnp.parsers import helpers
@@ -13,7 +13,7 @@ module_file = os.path.join(root_dir, "schemas", "error.capnp")
 error_capnp = capnp.load(str(module_file))
 
 
-class Error(error_message.IErrorFields):
+class ErrorFields(IErrorFields):
     def __init__(self, gen, payload: bytes):
         self._gen = gen
         self._ex = helpers.PayloadExpander(payload, gen.payloadSerializerID)
@@ -55,7 +55,7 @@ class Error(error_message.IErrorFields):
         return self._gen.payloadSerializerID
 
 
-def error_to_capnproto(e: error_message.Error) -> bytes:
+def error_to_capnproto(e: Error) -> bytes:
     error = error_capnp.Error.new_message()
 
     error.messageType = e.message_type
@@ -68,11 +68,11 @@ def error_to_capnproto(e: error_message.Error) -> bytes:
     payload = serialize_payload(payload_serializer, e.args, e.kwargs)
     packed_data = error.to_bytes_packed()
 
-    return helpers.prepend_header(error_message.Error.TYPE, packed_data, payload)
+    return helpers.prepend_header(Error.TYPE, packed_data, payload)
 
 
-def capnproto_to_error(data: bytes) -> error_message.Error:
+def capnproto_to_error(data: bytes) -> Error:
     message_data, payload_data = helpers.extract_message(data)
     err_obj = error_capnp.Error.from_bytes_packed(message_data)
 
-    return Error(err_obj, payload_data)
+    return Error(ErrorFields(err_obj, payload_data))

@@ -2,18 +2,17 @@ import os
 from pathlib import Path
 
 import capnp
-from wampproto.messages import event as event_message
+from wampproto.messages.event import Event, IEventFields
 from wampproto.serializers.payload import serialize_payload
 
 from wamp_msgs_capnp.parsers import helpers
 
-# Load schema
 root_dir = Path(__file__).resolve().parents[1]
 module_file = os.path.join(root_dir, "schemas", "event.capnp")
 event_capnp = capnp.load(str(module_file))
 
 
-class Event(event_message.IEventFields):
+class EventFields(IEventFields):
     def __init__(self, gen, payload: bytes):
         self._gen = gen
         self._ex = helpers.PayloadExpander(payload, gen.payloadSerializerID)
@@ -65,7 +64,7 @@ class Event(event_message.IEventFields):
         return self._gen.payloadSerializerID
 
 
-def event_to_capnproto(e: event_message.Event) -> bytes:
+def event_to_capnproto(e: Event) -> bytes:
     event = event_capnp.Event.new_message()
     event.subscriptionID = e.subscription_id
     event.publicationID = e.publication_id
@@ -90,11 +89,11 @@ def event_to_capnproto(e: event_message.Event) -> bytes:
 
     packed_data = event.to_bytes_packed()
 
-    return helpers.prepend_header(event_message.Event.TYPE, packed_data, payload)
+    return helpers.prepend_header(Event.TYPE, packed_data, payload)
 
 
-def capnproto_to_event(data: bytes, payload: bytes) -> event_message.Event:
+def capnproto_to_event(data: bytes, payload: bytes) -> Event:
     message_data, _ = helpers.extract_message(data)
     event_obj = event_capnp.Event.from_bytes_packed(message_data)
 
-    return Event(event_obj, payload)
+    return Event(EventFields(event_obj, payload))

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import capnp
 from wampproto import auth
-from wampproto.messages import challenge as challenge_message
+from wampproto.messages.challenge import Challenge, IChallengeFields
 
 from wamp_msgs_capnp.parsers import helpers
 
@@ -13,7 +13,7 @@ module_file = os.path.join(root_dir, "schemas", "challenge.capnp")
 challenge_capnp = capnp.load(str(module_file))
 
 
-class Challenge(challenge_message.IChallengeFields):
+class ChallengeFields(IChallengeFields):
     def __init__(self, gen):
         self._gen = gen
 
@@ -26,7 +26,7 @@ class Challenge(challenge_message.IChallengeFields):
         return {}
 
 
-def challenge_to_capnproto(c: challenge_message.Challenge) -> bytes:
+def challenge_to_capnproto(c: Challenge) -> bytes:
     challenge = challenge_capnp.Challenge.new_message()
 
     challenge_string = c.extra.get("challenge", "")
@@ -40,11 +40,11 @@ def challenge_to_capnproto(c: challenge_message.Challenge) -> bytes:
 
     data = challenge.to_bytes_packed()
 
-    return helpers.prepend_header(challenge_message.Challenge.TYPE, data, b"")
+    return helpers.prepend_header(Challenge.TYPE, data, b"")
 
 
-def capnproto_to_challenge(data: bytes) -> challenge_message.Challenge:
+def capnproto_to_challenge(data: bytes) -> Challenge:
     message_data, _ = helpers.extract_message(data)
     challenge_obj = challenge_capnp.Challenge.from_bytes_packed(message_data)
 
-    return Challenge(challenge_obj)
+    return Challenge(ChallengeFields(challenge_obj))

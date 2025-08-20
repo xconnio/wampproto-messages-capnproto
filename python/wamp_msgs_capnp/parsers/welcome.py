@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import welcome as welcome_message
+from wampproto.messages.welcome import Welcome, IWelcomeFields
 
 from wamp_msgs_capnp.parsers import helpers
 
@@ -12,7 +12,7 @@ module_file = os.path.join(root_dir, "schemas", "welcome.capnp")
 welcome_capnp = capnp.load(str(module_file))
 
 
-class Welcome(welcome_message.IWelcomeFields):
+class WelcomeFields(IWelcomeFields):
     def __init__(self, gen):
         self._gen = gen
 
@@ -50,7 +50,7 @@ class Welcome(welcome_message.IWelcomeFields):
         return {}
 
 
-def welcome_to_capnproto(w: welcome_message.Welcome) -> bytes:
+def welcome_to_capnproto(w: Welcome) -> bytes:
     welcome = welcome_capnp.Welcome.new_message()
 
     welcome.sessionID = w.session_id
@@ -59,11 +59,11 @@ def welcome_to_capnproto(w: welcome_message.Welcome) -> bytes:
     welcome.authmethod = w.authmethod
     packed_data = welcome.to_bytes_packed()
 
-    return helpers.prepend_header(welcome_message.Welcome.TYPE, packed_data, b"")
+    return helpers.prepend_header(Welcome.TYPE, packed_data, b"")
 
 
 def capnproto_to_welcome(data: bytes) -> Welcome:
     message_data, _ = helpers.extract_message(data)
     welcome_obj = welcome_capnp.Welcome.from_bytes_packed(message_data)
 
-    return Welcome(welcome_obj)
+    return Welcome(WelcomeFields(welcome_obj))

@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import cancel as cancel_message
+from wampproto.messages.cancel import Cancel, ICancelFields
 
 from wamp_msgs_capnp.parsers import helpers
 
@@ -12,7 +12,7 @@ module_file = os.path.join(root_dir, "schemas", "cancel.capnp")
 cancel_capnp = capnp.load(str(module_file))
 
 
-class Cancel(cancel_message.ICancelFields):
+class CancelFields(ICancelFields):
     def __init__(self, gen):
         self._gen = gen
 
@@ -25,17 +25,17 @@ class Cancel(cancel_message.ICancelFields):
         return {}
 
 
-def cancel_to_capnproto(c: cancel_message.Cancel) -> bytes:
+def cancel_to_capnproto(c: Cancel) -> bytes:
     cancel = cancel_capnp.Cancel.new_message()
     cancel.requestID = c.request_id
 
     packed_data = cancel.to_bytes_packed()
 
-    return helpers.prepend_header(cancel_message.Cancel.TYPE, packed_data, b"")
+    return helpers.prepend_header(Cancel.TYPE, packed_data, b"")
 
 
-def capnproto_to_cancel(data: bytes) -> cancel_message.Cancel:
+def capnproto_to_cancel(data: bytes) -> Cancel:
     message_data, _ = helpers.extract_message(data)
     cancel_obj = cancel_capnp.Cancel.from_bytes_packed(message_data)
 
-    return Cancel(cancel_obj)
+    return Cancel(CancelFields(cancel_obj))
