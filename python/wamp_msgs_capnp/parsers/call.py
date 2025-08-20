@@ -3,18 +3,17 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import call as call_message
+from wampproto.messages.call import Call, ICallFields
 from wampproto.serializers.payload import serialize_payload
 
 from wamp_msgs_capnp.parsers import helpers
 
-# Load the Cap'n Proto schema
 root_dir = Path(__file__).resolve().parents[1]
 schema_file = os.path.join(root_dir, "schemas", "call.capnp")
 call_capnp = capnp.load(str(schema_file))
 
 
-class Call(call_message.ICallFields):
+class CallFields(ICallFields):
     def __init__(self, gen, payload: bytes):
         self._gen = gen
         self._ex = helpers.PayloadExpander(payload, gen.payloadSerializerID)
@@ -52,11 +51,11 @@ class Call(call_message.ICallFields):
         return self._gen.payloadSerializerID
 
 
-def call_to_capnproto(c: call_message.Call) -> bytes:
+def call_to_capnproto(c: Call) -> bytes:
     call = call_capnp.Call.new_message()
 
     call.requestID = c.request_id
-    call.procedure = c.uri
+    call.procedure = c.procedure
 
     payload_serializer = helpers.select_payload_serializer(c.options)
     call.payloadSerializerID = payload_serializer
@@ -64,11 +63,11 @@ def call_to_capnproto(c: call_message.Call) -> bytes:
     payload = serialize_payload(payload_serializer, c.args, c.kwargs)
     packed_data = call.to_bytes_packed()
 
-    return helpers.prepend_header(call_message.Call.TYPE, packed_data, payload)
+    return helpers.prepend_header(Call.TYPE, packed_data, payload)
 
 
-def capnproto_to_call(data: bytes, payload: bytes) -> call_message.Call:
+def capnproto_to_call(data: bytes, payload: bytes) -> Call:
     message_data, _ = helpers.extract_message(data)
     call_obj = call_capnp.Call.from_bytes_packed(message_data)
 
-    return Call(call_obj, payload)
+    return Call(CallFields(call_obj, payload))

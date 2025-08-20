@@ -3,7 +3,7 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import hello as hello_message
+from wampproto.messages.hello import Hello, IHelloFields
 
 from wamp_msgs_capnp.parsers import helpers
 
@@ -12,7 +12,7 @@ module_file = os.path.join(root_dir, "schemas", "hello.capnp")
 hello_capnp = capnp.load(str(module_file))
 
 
-class Hello(hello_message.IHelloFields):
+class HelloFields(IHelloFields):
     def __init__(self, gen):
         self._gen = gen
 
@@ -70,7 +70,7 @@ class Hello(hello_message.IHelloFields):
         return roles
 
 
-def hello_to_capnproto(h: hello_message.Hello) -> bytes:
+def hello_to_capnproto(h: Hello) -> bytes:
     hello = hello_capnp.Hello.new_message()
     hello.realm = h.realm
     hello.authid = h.authid
@@ -109,11 +109,11 @@ def hello_to_capnproto(h: hello_message.Hello) -> bytes:
     hello.roles = roles
     packed_data = hello.to_bytes_packed()
 
-    return helpers.prepend_header(hello_message.Hello.TYPE, packed_data, b"")
+    return helpers.prepend_header(Hello.TYPE, packed_data, b"")
 
 
-def capnproto_to_hello(data: bytes) -> hello_message.Hello:
+def capnproto_to_hello(data: bytes) -> Hello:
     message_data, _ = helpers.extract_message(data)
     hello_obj = hello_capnp.Hello.from_bytes_packed(message_data)
 
-    return Hello(hello_obj)
+    return Hello(HelloFields(hello_obj))

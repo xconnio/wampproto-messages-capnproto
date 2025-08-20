@@ -3,18 +3,17 @@ from typing import Any
 from pathlib import Path
 
 import capnp
-from wampproto.messages import invocation as invocation_message
+from wampproto.messages.invocation import Invocation, IInvocationFields
 from wampproto.serializers.payload import serialize_payload
 
 from wamp_msgs_capnp.parsers import helpers
 
-# Load the Cap'n Proto schema
 root_dir = Path(__file__).resolve().parents[1]
 schema_file = os.path.join(root_dir, "schemas", "invocation.capnp")
 invocation_capnp = capnp.load(str(schema_file))
 
 
-class Invocation(invocation_message.IInvocationFields):
+class InvocationFields(IInvocationFields):
     def __init__(self, gen, payload: bytes):
         self._gen = gen
         self._ex = helpers.PayloadExpander(payload, gen.payloadSerializerID)
@@ -25,7 +24,7 @@ class Invocation(invocation_message.IInvocationFields):
 
     @property
     def registration_id(self) -> str:
-        return self._gen.registration_id
+        return self._gen.registrationID
 
     @property
     def args(self) -> list[Any]:
@@ -66,23 +65,23 @@ class Invocation(invocation_message.IInvocationFields):
         return self._gen.payloadSerializerID
 
 
-def invocation_to_capnproto(c: invocation_message.Invocation) -> bytes:
+def invocation_to_capnproto(i: Invocation) -> bytes:
     invocation = invocation_capnp.invocation.new_message()
 
-    invocation.requestID = c.request_id
-    invocation.registrationID = c.registration_id
+    invocation.requestID = i.request_id
+    invocation.registrationID = i.registration_id
 
-    payload_serializer = helpers.select_payload_serializer(c.details)
+    payload_serializer = helpers.select_payload_serializer(i.details)
     invocation.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, c.args, c.kwargs)
+    payload = serialize_payload(payload_serializer, i.args, i.kwargs)
     packed_data = invocation.to_bytes_packed()
 
-    return helpers.prepend_header(invocation_message.Invocation.TYPE, packed_data, payload)
+    return helpers.prepend_header(Invocation.TYPE, packed_data, payload)
 
 
-def capnproto_to_invocation(data: bytes, payload: bytes) -> invocation_message.Invocation:
+def capnproto_to_invocation(data: bytes, payload: bytes) -> Invocation:
     message_data, _ = helpers.extract_message(data)
-    invocation_obj = invocation_capnp.invocation.from_bytes_packed(message_data)
+    invocation_obj = invocation_capnp.Invocation.from_bytes_packed(message_data)
 
-    return Invocation(invocation_obj, payload)
+    return Invocation(InvocationFields(invocation_obj, payload))

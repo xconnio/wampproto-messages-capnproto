@@ -3,7 +3,7 @@ from typing import Any, Optional
 from pathlib import Path
 
 import capnp
-from wampproto.messages import publish as publish_message
+from wampproto.messages.publish import Publish, IPublishFields
 from wampproto.serializers.payload import serialize_payload
 
 from wamp_msgs_capnp.parsers import helpers
@@ -13,7 +13,7 @@ module_file = os.path.join(root_dir, "schemas", "publish.capnp")
 publish_capnp = capnp.load(str(module_file))
 
 
-class Publish(publish_message.IPublishFields):
+class PublishFields(IPublishFields):
     def __init__(self, gen, payload: bytes):
         self._gen = gen
         self._ex = helpers.PayloadExpander(payload, gen.payloadSerializerID)
@@ -56,11 +56,11 @@ class Publish(publish_message.IPublishFields):
         return self._gen.payloadSerializerID
 
 
-def publish_to_capnproto(p: publish_message.Publish) -> bytes:
+def publish_to_capnproto(p: Publish) -> bytes:
     publish = publish_capnp.Publish.new_message()
 
     publish.requestID = p.request_id
-    publish.topic = p.uri
+    publish.topic = p.topic
 
     payload_serializer = helpers.select_payload_serializer(p.options)
     publish.payloadSerializerID = payload_serializer
@@ -68,11 +68,11 @@ def publish_to_capnproto(p: publish_message.Publish) -> bytes:
     payload = serialize_payload(payload_serializer, p.args, p.kwargs)
     packed_data = publish.to_bytes_packed()
 
-    return helpers.prepend_header(publish_message.Publish.TYPE, packed_data, payload)
+    return helpers.prepend_header(Publish.TYPE, packed_data, payload)
 
 
-def capnproto_to_publish(data: bytes) -> publish_message.Publish:
+def capnproto_to_publish(data: bytes) -> Publish:
     message_data, payload_data = helpers.extract_message(data)
     publish_obj = publish_capnp.Publish.from_bytes_packed(message_data)
 
-    return Publish(publish_obj, payload_data)
+    return Publish(PublishFields(publish_obj, payload_data))
