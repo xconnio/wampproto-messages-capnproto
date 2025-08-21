@@ -22,7 +22,19 @@ func (c *Challenge) AuthMethod() string {
 }
 
 func (c *Challenge) Extra() map[string]any {
-	return map[string]any{}
+	extra := make(map[string]any)
+	challenge, err := c.gen.Challenge()
+	if err == nil {
+		extra["challenge"] = challenge
+	}
+
+	salt, err := c.gen.Salt()
+	if err == nil {
+		extra["salt"] = salt
+		extra["iterations"] = c.gen.Iterations()
+		extra["keylen"] = c.gen.Keylen()
+	}
+	return extra
 }
 
 func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
@@ -46,10 +58,21 @@ func ChallengeToCapnproto(m *messages.Challenge) ([]byte, error) {
 	}
 
 	if m.AuthMethod() == auth.MethodCRA {
-		challenge.SetKeylen(0)
-		challenge.SetIterations(0)
-		if err = challenge.SetSalt(""); err != nil {
-			return nil, err
+		saltString, ok := m.Extra()["salt"].(string)
+		if ok {
+			if err = challenge.SetSalt(saltString); err != nil {
+				return nil, err
+			}
+		}
+
+		iterations, ok := m.Extra()["iterations"].(uint32)
+		if ok {
+			challenge.SetIterations(iterations)
+		}
+
+		keylen, ok := m.Extra()["keylen"].(uint16)
+		if ok {
+			challenge.SetKeylen(keylen)
 		}
 	}
 
