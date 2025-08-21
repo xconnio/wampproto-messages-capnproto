@@ -9,6 +9,7 @@ struct Hello {
     authid @1 :Text;
     authmethods @2 :List(Text);
     roles @3 :Roles;
+    publicKey @4 :Text;
 
     struct Roles {
         caller @0 :Caller;
