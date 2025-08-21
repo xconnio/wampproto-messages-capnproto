@@ -61,8 +61,8 @@ def result_to_capnproto(r: Result) -> bytes:
     return helpers.prepend_header(Result.TYPE, packed_data, payload)
 
 
-def capnproto_to_result(data: bytes, payload: bytes) -> Result:
-    message_data, _ = helpers.extract_message(data)
+def capnproto_to_result(data: bytes) -> Result:
+    message_data, payload_data = helpers.extract_message(data)
     result_obj = result_capnp.Result.from_bytes_packed(message_data)
 
-    return Result(ResultFields(result_obj, payload))
+    return Result(ResultFields(result_obj, payload_data))

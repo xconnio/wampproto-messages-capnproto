@@ -62,8 +62,8 @@ def yield_to_capnproto(y: yield_message.Yield) -> bytes:
     return helpers.prepend_header(yield_message.Yield.TYPE, packed_data, payload)
 
 
-def capnproto_to_yield(data: bytes, payload: bytes) -> yield_message.Yield:
-    message_data, _ = helpers.extract_message(data)
+def capnproto_to_yield(data: bytes) -> yield_message.Yield:
+    message_data, payload_data = helpers.extract_message(data)
     yield_obj = yield_capnp.Yield.from_bytes_packed(message_data)
 
-    return Yield(yield_obj, payload)
+    return Yield(yield_obj, payload_data)
