@@ -66,7 +66,7 @@ class InvocationFields(IInvocationFields):
 
 
 def invocation_to_capnproto(i: Invocation) -> bytes:
-    invocation = invocation_capnp.invocation.new_message()
+    invocation = invocation_capnp.Invocation.new_message()
 
     invocation.requestID = i.request_id
     invocation.registrationID = i.registration_id
@@ -80,8 +80,8 @@ def invocation_to_capnproto(i: Invocation) -> bytes:
     return helpers.prepend_header(Invocation.TYPE, packed_data, payload)
 
 
-def capnproto_to_invocation(data: bytes, payload: bytes) -> Invocation:
-    message_data, _ = helpers.extract_message(data)
+def capnproto_to_invocation(data: bytes) -> Invocation:
+    message_data, payload_data = helpers.extract_message(data)
     invocation_obj = invocation_capnp.Invocation.from_bytes_packed(message_data)
 
-    return Invocation(InvocationFields(invocation_obj, payload))
+    return Invocation(InvocationFields(invocation_obj, payload_data))

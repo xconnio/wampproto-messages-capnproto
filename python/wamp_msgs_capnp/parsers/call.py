@@ -66,8 +66,8 @@ def call_to_capnproto(c: Call) -> bytes:
     return helpers.prepend_header(Call.TYPE, packed_data, payload)
 
 
-def capnproto_to_call(data: bytes, payload: bytes) -> Call:
-    message_data, _ = helpers.extract_message(data)
+def capnproto_to_call(data: bytes) -> Call:
+    message_data, payload_data = helpers.extract_message(data)
     call_obj = call_capnp.Call.from_bytes_packed(message_data)
 
-    return Call(CallFields(call_obj, payload))
+    return Call(CallFields(call_obj, payload_data))

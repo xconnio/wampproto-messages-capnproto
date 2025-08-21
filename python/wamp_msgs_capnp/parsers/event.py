@@ -92,8 +92,8 @@ def event_to_capnproto(e: Event) -> bytes:
     return helpers.prepend_header(Event.TYPE, packed_data, payload)
 
 
-def capnproto_to_event(data: bytes, payload: bytes) -> Event:
-    message_data, _ = helpers.extract_message(data)
+def capnproto_to_event(data: bytes) -> Event:
+    message_data, payload_data = helpers.extract_message(data)
     event_obj = event_capnp.Event.from_bytes_packed(message_data)
 
-    return Event(EventFields(event_obj, payload))
+    return Event(EventFields(event_obj, payload_data))
