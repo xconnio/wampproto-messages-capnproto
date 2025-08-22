@@ -32,7 +32,7 @@ func (p *Publish) Topic() string {
 func (p *Publish) Options() map[string]any {
 	var details map[string]any
 
-	if !p.gen.ExludeMe() {
+	if !p.gen.ExcludeMe() {
 		setDetail(&details, "exclude_me", false)
 	}
 
@@ -82,6 +82,11 @@ func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
 	acknowledge, ok := m.Options()["acknowledge"].(bool)
 	if ok {
 		publish.SetAcknowledge(acknowledge)
+	}
+
+	excludeMe, ok := m.Options()["exclude_me"].(bool)
+	if ok {
+		publish.SetExcludeMe(excludeMe)
 	}
 
 	payloadSerializer := selectPayloadSerializer(m.Options())

@@ -88,11 +88,11 @@ func (s Publish) SetPayloadSerializerID(v uint64) {
 	capnp.Struct(s).SetUint64(8, v)
 }
 
-func (s Publish) ExludeMe() bool {
+func (s Publish) ExcludeMe() bool {
 	return capnp.Struct(s).Bit(128)
 }
 
-func (s Publish) SetExludeMe(v bool) {
+func (s Publish) SetExcludeMe(v bool) {
 	capnp.Struct(s).SetBit(128, v)
 }
 
