@@ -9,6 +9,6 @@ struct Publish {
     topic @1 :Text;
     payloadSerializerID @2 :UInt64;
     # options
-    exludeMe @3 :Bool;
+    excludeMe @3 :Bool;
     acknowledge @4: Bool;
 }

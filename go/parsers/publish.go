@@ -32,7 +32,7 @@ func (p *Publish) Topic() string {
 func (p *Publish) Options() map[string]any {
 	var details map[string]any
 
-	if !p.gen.ExludeMe() {
+	if !p.gen.ExcludeMe() {
 		setDetail(&details, "exclude_me", false)
 	}
 
