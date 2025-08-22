@@ -84,6 +84,11 @@ func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
 		publish.SetAcknowledge(acknowledge)
 	}
 
+	excludeMe, ok := m.Options()["exclude_me"].(bool)
+	if ok {
+		publish.SetExcludeMe(excludeMe)
+	}
+
 	payloadSerializer := selectPayloadSerializer(m.Options())
 	publish.SetPayloadSerializerID(payloadSerializer)
 	payload, err := serializers.SerializePayload(payloadSerializer, m.Args(), m.KwArgs())
