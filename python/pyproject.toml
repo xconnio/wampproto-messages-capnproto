@@ -30,6 +30,9 @@ publish = ["twine", "build"]
 "Homepage" = "https://github.com/xconnio/wampproto-messages-capnproto"
 "Bug Tracker" = "https://github.com/xconnio/wampproto-messages-capnproto/issues"
 
+[tool.setuptools]
+script-files = ["generate_schemas.py"]
+
 [tool.setuptools.package-data]
 wamp_msgs_capnp = ["schemas/*.capnp"]
 
