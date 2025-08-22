@@ -20,7 +20,11 @@ func (s *Subscribe) RequestID() uint64 {
 }
 
 func (s *Subscribe) Options() map[string]any {
-	return map[string]any{}
+	options := make(map[string]any)
+	if s.gen.Match().String() != "" {
+		setDetail(&options, "match", s.gen.Match().String())
+	}
+	return options
 }
 
 func (s *Subscribe) Topic() string {
@@ -42,6 +46,11 @@ func SubscribeToCapnproto(m *messages.Subscribe) ([]byte, error) {
 	subscribe.SetRequestID(m.RequestID())
 	if err := subscribe.SetTopic(m.Topic()); err != nil {
 		return nil, err
+	}
+
+	matchString, ok := m.Options()["match"].(string)
+	if ok {
+		subscribe.SetMatch(gen.Subscribe_MatchFromString(matchString))
 	}
 
 	data, err := msg.MarshalPacked()
