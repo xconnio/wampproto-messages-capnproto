@@ -36,6 +36,10 @@ func (p *Publish) Options() map[string]any {
 		setDetail(&details, "exclude_me", false)
 	}
 
+	if p.gen.Acknowledge() {
+		setDetail(&details, "acknowledge", true)
+	}
+
 	return details
 }
 
@@ -73,6 +77,11 @@ func PublishToCapnproto(m *messages.Publish) ([]byte, error) {
 	publish.SetRequestID(m.RequestID())
 	if err = publish.SetTopic(m.Topic()); err != nil {
 		return nil, err
+	}
+
+	acknowledge, ok := m.Options()["acknowledge"].(bool)
+	if ok {
+		publish.SetAcknowledge(acknowledge)
 	}
 
 	payloadSerializer := selectPayloadSerializer(m.Options())
