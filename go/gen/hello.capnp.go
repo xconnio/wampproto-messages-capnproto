@@ -13,12 +13,12 @@ type Hello capnp.Struct
 const Hello_TypeID = 0xe2ea38674be7e974
 
 func NewHello(s *capnp.Segment) (Hello, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5})
 	return Hello(st), err
 }
 
 func NewRootHello(s *capnp.Segment) (Hello, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5})
 	return Hello(st), err
 }
 
@@ -137,12 +137,30 @@ func (s Hello) NewRoles() (Hello_Roles, error) {
 	return ss, err
 }
 
+func (s Hello) PublicKey() (string, error) {
+	p, err := capnp.Struct(s).Ptr(4)
+	return p.Text(), err
+}
+
+func (s Hello) HasPublicKey() bool {
+	return capnp.Struct(s).HasPtr(4)
+}
+
+func (s Hello) PublicKeyBytes() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(4)
+	return p.TextBytes(), err
+}
+
+func (s Hello) SetPublicKey(v string) error {
+	return capnp.Struct(s).SetText(4, v)
+}
+
 // Hello_List is a list of Hello.
 type Hello_List = capnp.StructList[Hello]
 
 // NewHello creates a new list of Hello.
 func NewHello_List(s *capnp.Segment, sz int32) (Hello_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5}, sz)
 	return capnp.StructList[Hello](l), err
 }
 

@@ -41,7 +41,12 @@ func (h *Hello) AuthMethods() []string {
 }
 
 func (h *Hello) AuthExtra() map[string]any {
-	return map[string]any{}
+	extra := make(map[string]any)
+	pubKey, err := h.gen.PublicKey()
+	if err == nil {
+		extra["pubkey"] = pubKey
+	}
+	return extra
 }
 
 func (h *Hello) Roles() map[string]any {
@@ -196,6 +201,13 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 
 	if err = hello.SetRoles(roles); err != nil {
 		return nil, err
+	}
+
+	pubKey, ok := h.AuthExtra()["pubkey"].(string)
+	if ok {
+		if err = hello.SetPublicKey(pubKey); err != nil {
+			return nil, err
+		}
 	}
 
 	data, err := msg.MarshalPacked()

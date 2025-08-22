@@ -10,4 +10,5 @@ struct Publish {
     payloadSerializerID @2 :UInt64;
     # options
     exludeMe @3 :Bool;
+    acknowledge @4: Bool;
 }

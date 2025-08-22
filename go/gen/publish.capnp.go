@@ -96,6 +96,14 @@ func (s Publish) SetExludeMe(v bool) {
 	capnp.Struct(s).SetBit(128, v)
 }
 
+func (s Publish) Acknowledge() bool {
+	return capnp.Struct(s).Bit(129)
+}
+
+func (s Publish) SetAcknowledge(v bool) {
+	capnp.Struct(s).SetBit(129, v)
+}
+
 // Publish_List is a list of Publish.
 type Publish_List = capnp.StructList[Publish]
 
