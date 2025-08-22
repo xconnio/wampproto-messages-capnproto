@@ -20,7 +20,14 @@ func (r *Register) RequestID() uint64 {
 }
 
 func (r *Register) Options() map[string]any {
-	return map[string]any{}
+	options := make(map[string]any)
+	if r.gen.Match().String() != "" {
+		setDetail(&options, "match", r.gen.Match().String())
+	}
+	if r.gen.Invoke().String() != "" {
+		setDetail(&options, "invoke", r.gen.Invoke().String())
+	}
+	return options
 }
 
 func (r *Register) Procedure() string {
@@ -43,6 +50,16 @@ func RegisterToCapnproto(m *messages.Register) ([]byte, error) {
 
 	if err = register.SetProcedure(m.Procedure()); err != nil {
 		return nil, err
+	}
+
+	matchString, ok := m.Options()["match"].(string)
+	if ok {
+		register.SetMatch(gen.Register_MatchFromString(matchString))
+	}
+
+	invokeString, ok := m.Options()["invoke"].(string)
+	if ok {
+		register.SetInvoke(gen.Register_InvokeFromString(invokeString))
 	}
 
 	data, err := msg.MarshalPacked()
