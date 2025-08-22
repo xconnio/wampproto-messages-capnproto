@@ -30,7 +30,7 @@ class PublishFields(IPublishFields):
     def options(self) -> Optional[dict[str, Any]]:
         details = {}
 
-        if not self._gen.exludeMe:
+        if not self._gen.excludeMe:
             details["exclude_me"] = False
 
         return details
