@@ -23,7 +23,16 @@ class ChallengeFields(IChallengeFields):
 
     @property
     def extra(self) -> dict[str, Any]:
-        return {}
+        extra = {}
+        if self._gen.challenge:
+            extra["challenge"] = self._gen.challenge
+
+        if self._gen.salt:
+            extra["salt"] = self._gen.salt
+            extra["iterations"] = self._gen.iterations
+            extra["keylen"] = self._gen.keylen
+
+        return extra
 
 
 def challenge_to_capnproto(c: Challenge) -> bytes:
@@ -34,9 +43,12 @@ def challenge_to_capnproto(c: Challenge) -> bytes:
     challenge.authMethod = c.authmethod
 
     if c.authmethod == auth.WAMPCRAAuthenticator.TYPE:
-        challenge.keylen = 0
-        challenge.iterations = 0
-        challenge.salt = ""
+        if c.extra.get("salt", None) is not None:
+            challenge.salt = c.extra.get("salt")
+        if c.extra.get("iterations", None) is not None:
+            challenge.iterations = c.extra.get("iterations")
+        if c.extra.get("keylen", None) is not None:
+            challenge.keylen = c.extra.get("keylen")
 
     data = challenge.to_bytes_packed()
 
