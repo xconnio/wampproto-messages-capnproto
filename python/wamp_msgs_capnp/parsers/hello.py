@@ -30,7 +30,11 @@ class HelloFields(IHelloFields):
 
     @property
     def authextra(self) -> dict[str, Any]:
-        return {}
+        extra = {}
+        if self._gen.publicKey:
+            extra["pubkey"] = self._gen.publicKey
+
+        return extra
 
     @property
     def roles(self) -> dict[str, Any]:
@@ -76,6 +80,9 @@ def hello_to_capnproto(h: Hello) -> bytes:
     hello.authid = h.authid
 
     hello.authmethods = h.authmethods
+    public_key = h.authextra.get("pubkey", None)
+    if public_key is not None:
+        hello.publicKey = public_key
 
     roles = hello.init("roles")
 

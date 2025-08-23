@@ -33,6 +33,9 @@ class PublishFields(IPublishFields):
         if not self._gen.excludeMe:
             details["exclude_me"] = False
 
+        if self._gen.acknowledge:
+            details["acknowledge"] = True
+
         return details
 
     @property
@@ -61,6 +64,17 @@ def publish_to_capnproto(p: Publish) -> bytes:
 
     publish.requestID = p.request_id
     publish.topic = p.topic
+
+    options = {}
+    acknowledge = p.options.get("acknowledge", None)
+    if acknowledge is not None:
+        options["acknowledge"] = acknowledge
+
+    exclude_me = p.options.get("exclude_me", None)
+    if exclude_me is not None:
+        options["exclude_me"] = exclude_me
+
+    publish.options = options
 
     payload_serializer = helpers.select_payload_serializer(p.options)
     publish.payloadSerializerID = payload_serializer
