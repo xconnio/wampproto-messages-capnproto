@@ -15,8 +15,8 @@ func PrependHeader(messageType uint64, messageData, payloadData []byte) []byte {
 
 	result := make([]byte, totalLen)
 
-	result[0] = uint8(messageType)
-	binary.BigEndian.PutUint16(result[1:HeaderLength], uint16(len(messageData)))
+	result[0] = uint8(messageType)                                               //nolint:gosec
+	binary.BigEndian.PutUint16(result[1:HeaderLength], uint16(len(messageData))) //nolint:gosec
 
 	copy(result[HeaderLength:], messageData)
 

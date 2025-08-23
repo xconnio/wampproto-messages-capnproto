@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"github.com/xconnio/wampproto-go/messages"
 	wampprotocapnp "github.com/xconnio/wampproto-serializer-capnproto/go"
 )

@@ -2,8 +2,8 @@ package parsers
 
 import (
 	"capnproto.org/go/capnp/v3"
-	"github.com/xconnio/wampproto-go/auth"
 
+	"github.com/xconnio/wampproto-go/auth"
 	"github.com/xconnio/wampproto-go/messages"
 	"github.com/xconnio/wampproto-serializer-capnproto/go/gen"
 )

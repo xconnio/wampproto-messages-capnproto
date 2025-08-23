@@ -22,8 +22,7 @@ github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAh
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
 github.com/x448/float16 v0.8.4 h1:qLwI1I70+NjRFUR3zs1JPUCgaCXSh3SW62uAKT1mSBM=
 github.com/x448/float16 v0.8.4/go.mod h1:14CWIYCyZA/cWjXOioeEpHeN/83MdbZDRQHoFcYsOfg=
-github.com/xconnio/wampproto-go v0.0.0-20250811153808-9bd788341450 h1:C8SRcnIMuPRIlWR51VE3B4f2VO4vrvsntI3rvjiUKiQ=
-github.com/xconnio/wampproto-go v0.0.0-20250811153808-9bd788341450/go.mod h1:LONo5ncxniaMNsvdQ0YKUT2lsSchu9Y/NeGvfQgUSiI=
+github.com/xconnio/wampproto-go v0.0.0-20250820111356-1ebf798b6d92 h1:ZJGhlI+Cs58h5cVY0W5NDYxtY5vJOFdjxsUKImhDTn4=
 github.com/xconnio/wampproto-go v0.0.0-20250820111356-1ebf798b6d92/go.mod h1:LONo5ncxniaMNsvdQ0YKUT2lsSchu9Y/NeGvfQgUSiI=
 golang.org/x/crypto v0.23.0 h1:dIJU/v2J8Mdglj/8rJ6UUOM3Zc9zLZxVZwwxMooUSAI=
 golang.org/x/crypto v0.23.0/go.mod h1:CKFgDieR+mRhux2Lsu27y0fO304Db0wZe70UKqHu0v8=
