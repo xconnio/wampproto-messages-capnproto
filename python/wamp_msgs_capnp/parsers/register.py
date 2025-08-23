@@ -22,7 +22,14 @@ class RegisterFields(IRegisterFields):
 
     @property
     def options(self) -> dict[str, Any]:
-        return {}
+        options = {}
+        if self._gen.match:
+            options["match"] = self._gen.match
+
+        if self._gen.invoke:
+            options["invoke"] = self._gen.invoke
+
+        return options
 
     @property
     def procedure(self) -> str:
@@ -34,6 +41,14 @@ def register_to_capnproto(r: Register) -> bytes:
 
     register.requestID = r.request_id
     register.procedure = r.procedure
+
+    match = r.options.get("match", None)
+    if match is not None:
+        register.match = match
+
+    invoke = r.options.get("invoke", None)
+    if invoke is not None:
+        register.invoke = invoke
 
     packed_data = register.to_bytes_packed()
 

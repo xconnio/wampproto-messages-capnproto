@@ -22,7 +22,11 @@ class SubscribeFields(ISubscribeFields):
 
     @property
     def options(self) -> dict[str, Any]:
-        return {}
+        options = {}
+        if self._gen.match:
+            options["match"] = self._gen.match
+
+        return options
 
     @property
     def topic(self) -> str:
@@ -33,6 +37,10 @@ def subscribe_to_capnproto(s: Subscribe) -> bytes:
     subscribe = subscribe_capnp.Subscribe.new_message()
     subscribe.requestID = s.request_id
     subscribe.topic = s.topic
+
+    match = s.options.get("match", None)
+    if match is not None:
+        subscribe.match = match
 
     packed_data = subscribe.to_bytes_packed()
 
