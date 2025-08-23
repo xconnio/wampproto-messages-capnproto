@@ -109,7 +109,7 @@ func HelloToCapnproto(h *messages.Hello) ([]byte, error) {
 		return nil, err
 	}
 
-	methods, err := hello.NewAuthmethods(int32(len(h.AuthMethods())))
+	methods, err := hello.NewAuthmethods(int32(len(h.AuthMethods()))) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}
