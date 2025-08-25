@@ -60,7 +60,11 @@ def call_to_capnproto(c: Call) -> bytes:
     payload_serializer = helpers.select_payload_serializer(c.options)
     call.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, c.args, c.kwargs)
+    if c.payload_is_binary():
+        payload = c.payload
+    else:
+        payload = serialize_payload(payload_serializer, c.args, c.kwargs)
+
     packed_data = call.to_bytes_packed()
 
     return helpers.prepend_header(Call.TYPE, packed_data, payload)

@@ -55,7 +55,11 @@ def result_to_capnproto(r: Result) -> bytes:
     payload_serializer = helpers.select_payload_serializer(r.details)
     result.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, r.args, r.kwargs)
+    if r.payload_is_binary():
+        payload = r.payload
+    else:
+        payload = serialize_payload(payload_serializer, r.args, r.kwargs)
+
     packed_data = result.to_bytes_packed()
 
     return helpers.prepend_header(Result.TYPE, packed_data, payload)
