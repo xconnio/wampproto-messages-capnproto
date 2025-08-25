@@ -65,7 +65,11 @@ def publish_to_capnproto(p: Publish) -> bytes:
     payload_serializer = helpers.select_payload_serializer(p.options)
     publish.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, p.args, p.kwargs)
+    if p.payload_is_binary():
+        payload = p.payload
+    else:
+        payload = serialize_payload(payload_serializer, p.args, p.kwargs)
+
     packed_data = publish.to_bytes_packed()
 
     return helpers.prepend_header(Publish.TYPE, packed_data, payload)

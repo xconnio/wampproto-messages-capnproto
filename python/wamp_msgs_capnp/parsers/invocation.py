@@ -74,7 +74,11 @@ def invocation_to_capnproto(i: Invocation) -> bytes:
     payload_serializer = helpers.select_payload_serializer(i.details)
     invocation.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, i.args, i.kwargs)
+    if i.payload_is_binary():
+        payload = i.payload
+    else:
+        payload = serialize_payload(payload_serializer, i.args, i.kwargs)
+
     packed_data = invocation.to_bytes_packed()
 
     return helpers.prepend_header(Invocation.TYPE, packed_data, payload)

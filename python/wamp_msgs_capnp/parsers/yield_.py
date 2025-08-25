@@ -56,7 +56,11 @@ def yield_to_capnproto(y: yield_message.Yield) -> bytes:
     payload_serializer = helpers.select_payload_serializer(y.options)
     yield_obj.payloadSerializerID = payload_serializer
 
-    payload = serialize_payload(payload_serializer, y.args, y.kwargs)
+    if y.payload_is_binary():
+        payload = y.payload
+    else:
+        payload = serialize_payload(payload_serializer, y.args, y.kwargs)
+
     packed_data = yield_obj.to_bytes_packed()
 
     return helpers.prepend_header(yield_message.Yield.TYPE, packed_data, payload)
